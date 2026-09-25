@@ -1,0 +1,99 @@
+{
+  "businessProfile": {
+    "businessName": "Lumina Cafe & Roasters",
+    "industry": "Specialty Food & Beverage",
+    "description": "Artisan espresso bar, organic sourdough pastries, and community workspace.",
+    "targetAudience": "Coffee enthusiasts, university students, and remote professionals",
+    "brandTone": "Warm & Welcoming",
+    "keywords": [
+      "Artisan",
+      "Organic",
+      "Craft",
+      "Local"
+    ],
+    "postingFrequency": "Daily (Monday - Saturday)",
+    "defaultMode": "review",
+    "preferredPostingTimes": [
+      "09:00",
+      "14:00",
+      "19:00"
+    ],
+    "targetPlatforms": [
+      "twitter",
+      "instagram",
+      "facebook",
+      "tiktok"
+    ]
+  },
+  "socialAccounts": [
+    {
+      "id": "acc-ig",
+      "platform": "instagram",
+      "name": "Instagram Business",
+      "handle": "@luminacoffee",
+      "status": "connected",
+      "mode": "sandbox",
+      "connectedAt": "2026-09-24T10:58:17.821Z",
+      "followers": 1240,
+      "avatar": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      "id": "acc-tw",
+      "platform": "twitter",
+      "name": "X / Twitter",
+      "handle": "@LuminaCafe",
+      "status": "connected",
+      "mode": "live",
+      "connectedAt": "2026-09-24T10:58:17.821Z",
+      "followers": 890,
+      "avatar": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      "id": "acc-fb",
+      "platform": "facebook",
+      "name": "Facebook Page",
+      "handle": "Lumina Cafe & Roasters",
+      "status": "connected",
+      "mode": "sandbox",
+      "connectedAt": "2026-09-24T10:58:17.821Z",
+      "followers": 1450,
+      "avatar": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      "id": "acc-tt",
+      "platform": "tiktok",
+      "name": "TikTok Creator",
+      "handle": "@luminacafetok",
+      "status": "connected",
+      "mode": "sandbox",
+      "connectedAt": "2026-09-24T10:58:17.821Z",
+      "followers": 3200,
+      "avatar": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      "id": "acc-li",
+      "platform": "linkedin",
+      "name": "LinkedIn Company",
+      "handle": "Lumina Coffee Roasters",
+      "status": "disconnected",
+      "mode": "sandbox",
+      "connectedAt": null,
+      "followers": 120,
+      "avatar": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80"
+    }
+  ],
+  "posts": [],
+  "sampleComments": [],
+  "logs": [
+    {
+      "timestamp": "2026-09-24T10:58:27.315Z",
+      "level": "info",
+      "message": "[AI Generator] Created tailored copy for topic: \"Grand Opening 50% Off Everything This Saturday\" via Contextual Neural Engine (Native & Live AI Vision)"
+    },
+    {
+      "timestamp": "2026-09-24T10:58:17.821Z",
+      "level": "info",
+      "message": "Automatrix real data engine initialized. Ready for AI campaign generation."
+    }
+  ]
+}

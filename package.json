@@ -1,0 +1,16 @@
+{
+  "name": "automatrix",
+  "version": "1.0.0",
+  "description": "Unified AI Agent-Powered Social Media Management Platform - Enterprise Modular Architecture",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "node backend/src/server.js",
+    "build": "cd client && npm run build",
+    "setup": "npm install && cd client && npm install && npm run build"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

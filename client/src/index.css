@@ -1,0 +1,181 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+/* Warm Editorial Sand Canvas (Bespoke Non-AI Palette) */
+.app-canvas {
+  background-color: #f7f7f5;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(217, 119, 6, 0.02) 0px, transparent 40%),
+    radial-gradient(at 100% 0%, rgba(28, 25, 23, 0.02) 0px, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(28, 25, 23, 0.02) 0px, transparent 40%);
+}
+
+.dark .app-canvas {
+  background-color: #0c0a09;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.03) 0px, transparent 40%),
+    radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.02) 0px, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(28, 25, 23, 0.03) 0px, transparent 40%);
+}
+
+/* Crisp Warm Card Surfaces (Linear / Notion Inspired) */
+.glass-panel {
+  background: #ffffff;
+  border: 1px solid #e7e5e4;
+  box-shadow: 
+    0 1px 2px 0 rgba(28, 25, 23, 0.02), 
+    0 4px 16px -2px rgba(28, 25, 23, 0.04),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  color: #1c1917;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .glass-panel {
+  background: rgba(28, 25, 23, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 20px -4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  color: #fafaf9;
+}
+
+.glass-panel-hover:hover {
+  border-color: #a8a29e;
+  transform: translateY(-1px);
+  box-shadow: 
+    0 2px 4px 0 rgba(28, 25, 23, 0.02),
+    0 12px 28px -4px rgba(28, 25, 23, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 1);
+}
+
+.dark .glass-panel-hover:hover {
+  background: rgba(41, 37, 36, 0.9);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.45);
+}
+
+.glass-card-active {
+  border-color: #1c1917 !important;
+  box-shadow: 
+    0 0 0 1px #1c1917, 
+    0 8px 20px -4px rgba(28, 25, 23, 0.12) !important;
+}
+
+.dark .glass-card-active {
+  border-color: #fafaf9 !important;
+  box-shadow: 
+    0 0 0 1px #fafaf9, 
+    0 8px 20px -4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Precision Obsidian & Stone Input Controls */
+.saas-input {
+  background-color: #ffffff;
+  border: 1px solid #d6d3d1;
+  color: #1c1917;
+  box-shadow: 0 1px 2px 0 rgba(28, 25, 23, 0.02);
+  transition: all 0.15s ease-in-out;
+}
+
+.saas-input:hover {
+  border-color: #a8a29e;
+}
+
+.saas-input:focus {
+  background-color: #ffffff;
+  border-color: #1c1917;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(28, 25, 23, 0.08), 0 1px 2px 0 rgba(28, 25, 23, 0.04);
+}
+
+.dark .saas-input {
+  background-color: rgba(28, 25, 23, 0.8);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #fafaf9;
+  box-shadow: none;
+}
+
+.dark .saas-input:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark .saas-input:focus {
+  background-color: rgba(28, 25, 23, 0.95);
+  border-color: #fafaf9;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+/* Obsidian Monolith Primary Button */
+.saas-btn-primary {
+  background: #1c1917;
+  color: #fafaf9;
+  border: 1px solid #0c0a09;
+  box-shadow: 
+    0 1px 2px 0 rgba(28, 25, 23, 0.15), 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  transition: all 0.15s ease;
+}
+
+.saas-btn-primary:hover {
+  background: #000000;
+  box-shadow: 
+    0 4px 12px 0 rgba(28, 25, 23, 0.2), 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-0.5px);
+}
+
+.saas-btn-primary:active {
+  transform: translateY(0.5px);
+}
+
+.dark .saas-btn-primary {
+  background: #fafaf9;
+  color: #1c1917;
+  border: 1px solid #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.dark .saas-btn-primary:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 12px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 162, 158, 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 162, 158, 0.6);
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
