@@ -73,9 +73,13 @@ automatrix/
 │       │   ├── PostService.js         # Post lifecycle & domain logic
 │       │   ├── SchedulerService.js    # Background worker (mutex lock & timer)
 │       │   └── AnalyticsService.js    # Real metrics aggregation, 7-day trend, NLP delegation
-│       ├── repositories/      # DAO / Data Access Layer (Mongoose)
+│       ├── repositories/      # DAO / Data Access Layer (Mongoose, one module per collection)
 │       │   ├── PostRepository.js
-│       │   └── index.js       # Account/Profile/Log/Comment repositories
+│       │   ├── AccountRepository.js
+│       │   ├── ProfileRepository.js
+│       │   ├── LogRepository.js
+│       │   ├── CommentRepository.js
+│       │   └── index.js       # aggregator (exports all repositories)
 │       ├── routes/            # One dedicated router file per resource
 │       │   ├── postRoutes.js          # /api/posts (+ /generate, /:id/approve, /:id/publish-now)
 │       │   ├── profileRoutes.js       # /api/profile (+ /ai-config)
