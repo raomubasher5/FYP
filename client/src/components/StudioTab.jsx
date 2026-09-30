@@ -85,8 +85,13 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
     if (!generatedData) return;
 
     try {
+      // Map the generator's output (coreTopic/toneUsed) to the fields the
+      // Post API requires (topic/tone/targetPlatforms)
       const finalPost = {
         ...generatedData,
+        topic: generatedData.coreTopic || generatedData.topic || topic,
+        tone: generatedData.toneUsed || tone,
+        targetPlatforms,
         platforms: editableContent,
         mode,
         scheduledTime: new Date(scheduledDate).toISOString()
