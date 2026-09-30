@@ -70,6 +70,7 @@ class InsightEngine {
     // 3. Top-performing topic (real totals)
     const byTopic = {};
     published.forEach((p) => {
+      if (!p.topic) return; // posts without a topic can't rank
       byTopic[p.topic] = (byTopic[p.topic] || 0) + this.engagement(p);
     });
     const topicEntries = Object.entries(byTopic).sort((a, b) => b[1] - a[1]);
