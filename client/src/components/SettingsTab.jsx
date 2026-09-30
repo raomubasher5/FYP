@@ -13,7 +13,9 @@ import {
   Key,
   ExternalLink,
   ShieldCheck,
-  Check
+  Check,
+  Search,
+  Globe
 } from 'lucide-react';
 import { profileApi } from '../services/api';
 
@@ -29,10 +31,14 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
   });
 
   const [aiConfig, setAiConfig] = useState({
-    provider: 'contextual', // 'contextual' | 'gemini' | 'groq'
+    provider: 'contextual', // 'contextual' | 'gemini' | 'groq' | 'ollama'
     apiKey: '',
-    model: 'gemini-1.5-flash'
+    model: '',
+    baseUrl: 'http://localhost:11434' // Ollama server address
   });
+
+  const [ollamaModels, setOllamaModels] = useState([]);
+  const [scanningOllama, setScanningOllama] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [savingAI, setSavingAI] = useState(false);
@@ -46,6 +52,24 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
       onNotify('Failed to save settings: ' + err.message, 'error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  /** Ask the user's Ollama server which models are pulled locally. */
+  const handleScanOllama = async () => {
+    setScanningOllama(true);
+    try {
+      const result = await profileApi.listOllamaModels(aiConfig.baseUrl);
+      const models = result?.models || [];
+      setOllamaModels(models);
+      if (models.length > 0 && !models.includes(aiConfig.model)) {
+        setAiConfig((prev) => ({ ...prev, model: models[0] }));
+      }
+      onNotify(`Found ${models.length} local model${models.length === 1 ? '' : 's'} in Ollama at ${result?.baseUrl || aiConfig.baseUrl}`, 'success');
+    } catch (err) {
+      onNotify('Could not reach Ollama: ' + err.message, 'error');
+    } finally {
+      setScanningOllama(false);
     }
   };
 
@@ -223,7 +247,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
                     type="radio"
                     name="ai_provider"
                     checked={aiConfig.provider === 'contextual'}
-                    onChange={() => setAiConfig({ ...aiConfig, provider: 'contextual' })}
+                    onChange={() => setAiConfig({ ...aiConfig, provider: 'contextual', model: '' })}
                     className="accent-stone-900 dark:accent-stone-100 w-4 h-4 cursor-pointer"
                   />
                   <div>
@@ -253,7 +277,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
                     type="radio"
                     name="ai_provider"
                     checked={aiConfig.provider === 'gemini'}
-                    onChange={() => setAiConfig({ ...aiConfig, provider: 'gemini' })}
+                    onChange={() => setAiConfig({ ...aiConfig, provider: 'gemini', model: 'gemini-1.5-flash' })}
                     className="accent-stone-900 dark:accent-stone-100 w-4 h-4 cursor-pointer"
                   />
                   <div>
@@ -283,7 +307,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
                     type="radio"
                     name="ai_provider"
                     checked={aiConfig.provider === 'groq'}
-                    onChange={() => setAiConfig({ ...aiConfig, provider: 'groq' })}
+                    onChange={() => setAiConfig({ ...aiConfig, provider: 'groq', model: 'llama-3.3-70b-versatile' })}
                     className="accent-stone-900 dark:accent-stone-100 w-4 h-4 cursor-pointer"
                   />
                   <div>
@@ -299,6 +323,36 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
                     : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700'
                 }`}>
                   FREE KEY
+                </span>
+              </label>
+
+              {/* Ollama (local models on the user's PC) */}
+              <label className={`p-3.5 rounded-2xl border cursor-pointer text-xs flex items-center justify-between transition ${
+                aiConfig.provider === 'ollama' 
+                  ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent shadow-sm' 
+                  : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="radio"
+                    name="ai_provider"
+                    checked={aiConfig.provider === 'ollama'}
+                    onChange={() => setAiConfig({ ...aiConfig, provider: 'ollama', model: aiConfig.model || 'llama3.1' })}
+                    className="accent-stone-900 dark:accent-stone-100 w-4 h-4 cursor-pointer"
+                  />
+                  <div>
+                    <div className="font-bold text-xs">Ollama — your local models</div>
+                    <div className={`text-[10px] ${aiConfig.provider === 'ollama' ? 'text-stone-300 dark:text-stone-600' : 'text-stone-500 dark:text-stone-400'}`}>
+                      Runs on your PC (llama3.1, mistral, qwen2.5…) · no API key, no internet
+                    </div>
+                  </div>
+                </div>
+                <span className={`text-[9px] px-2 py-0.5 rounded-md font-mono font-bold uppercase ${
+                  aiConfig.provider === 'ollama' 
+                    ? 'bg-stone-800 text-stone-200 dark:bg-stone-200 dark:text-stone-800' 
+                    : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700'
+                }`}>
+                  LOCAL
                 </span>
               </label>
             </div>
@@ -323,6 +377,53 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
               </div>
             )}
 
+            {/* Ollama connection (local server on the user's PC) */}
+            {aiConfig.provider === 'ollama' && (
+              <div className="space-y-2.5 pt-2 border-t border-stone-200/80 dark:border-stone-800">
+                <label className="block text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center space-x-1">
+                  <Globe className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
+                  <span>Ollama server address:</span>
+                </label>
+                <input
+                  type="text"
+                  value={aiConfig.baseUrl}
+                  onChange={(e) => setAiConfig({ ...aiConfig, baseUrl: e.target.value })}
+                  placeholder="http://localhost:11434"
+                  className="saas-input w-full rounded-xl p-3 text-xs font-mono"
+                />
+
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <label className="block text-xs font-bold text-stone-800 dark:text-stone-200 mb-1.5">Model:</label>
+                    <input
+                      type="text"
+                      list="ollama-models"
+                      value={aiConfig.model}
+                      onChange={(e) => setAiConfig({ ...aiConfig, model: e.target.value })}
+                      placeholder="llama3.1"
+                      className="saas-input w-full rounded-xl p-3 text-xs font-mono"
+                    />
+                    <datalist id="ollama-models">
+                      {ollamaModels.map((m) => <option key={m} value={m} />)}
+                    </datalist>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleScanOllama}
+                    disabled={scanningOllama}
+                    className="shrink-0 flex items-center space-x-1.5 px-3 py-3 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-semibold text-xs rounded-xl transition cursor-pointer disabled:opacity-50"
+                    title="Ask Ollama which models are installed on your PC"
+                  >
+                    <Search className={`w-3.5 h-3.5 ${scanningOllama ? 'animate-pulse' : ''}`} />
+                    <span>{scanningOllama ? 'Scanning…' : 'Detect models'}</span>
+                  </button>
+                </div>
+                <span className="text-[10px] text-stone-500 dark:text-stone-400 block">
+                  Ollama must be running on your PC (the app or <span className="font-mono">ollama serve</span>). Nothing is stored — your prompts never leave your machine.
+                </span>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={handleSaveAIConfig}
@@ -340,7 +441,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
             <div>
               <strong className="text-stone-900 dark:text-stone-100 text-sm block font-bold">Real Content Generation Guarantee:</strong>
               <p className="mt-1 leading-relaxed text-stone-600 dark:text-stone-400">
-                All dummy seed posts have been removed. Every post created in the AI Composer now runs through the dynamic contextual AI engine with matching live AI diffusion image generation, or directly through Gemini / Groq when configured.
+                All dummy seed posts have been removed. Every post created in the AI Composer now runs through the dynamic contextual AI engine with matching live AI diffusion image generation, or directly through Gemini / Groq / Ollama (your local models) when configured.
               </p>
             </div>
           </div>

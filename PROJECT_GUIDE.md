@@ -133,7 +133,10 @@ automatrix/
    * Graceful shutdown: scheduler stop -> HTTP close -> `mongoose.disconnect()`.
 
 3. **Decoupled AI Engine (Factory Pattern):**
-   * `BaseAIProvider` contract; switch `mock | contextual | gemini | groq` via `.env` or the in-app Settings (no restart).
+   * `BaseAIProvider` contract; switch `mock | contextual | gemini | groq | ollama` via `.env` or the in-app Settings (no restart).
+   * `OllamaProvider` — runs generation/sentiment against a LOCAL Ollama server on the user's PC
+   *   (`OLLAMA_BASE_URL` + `OLLAMA_MODEL`, e.g. llama3.1 / mistral / qwen2.5). No API key, no cloud.
+   *   Settings UI can auto-detect installed models via `GET /api/system/ollama-models`.
    * Gemini/Groq make **real LLM calls**; their images are generated from the LLM's own `imagePrompt` (Pollinations diffusion API) — never a hardcoded stock photo.
 
 4. **Data-Driven Insights, Not Invented Ones:**
@@ -177,6 +180,7 @@ automatrix/
 |---|---|---|
 | `MONGO_URI` | `mongodb://127.0.0.1:27017/automatrix` | Your real database (local or Atlas) |
 | `PORT` / `HOST` | `3000` / `0.0.0.0` | Express API + production client |
-| `AI_PROVIDER` | `mock` | `mock` \| `contextual` \| `gemini` \| `groq` |
+| `AI_PROVIDER` | `mock` | `mock` \| `contextual` \| `gemini` \| `groq` \| `ollama` |
 | `GEMINI_API_KEY` / `GROQ_API_KEY` | — | Required for the corresponding provider |
+| `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | `http://localhost:11434` / `llama3.1` | Ollama (local models) — no API key needed |
 | `SCHEDULER_INTERVAL_MS` | `4000` | Background publish-worker tick |

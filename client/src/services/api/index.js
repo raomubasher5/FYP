@@ -23,6 +23,7 @@ export const profileApi = {
   get: () => apiClient.get('/profile'),
   update: (data) => apiClient.put('/profile', data),
   updateAIConfig: (data) => apiClient.post('/profile/ai-config', data),
+  listOllamaModels: (baseUrl) => apiClient.get(`/system/ollama-models?url=${encodeURIComponent(baseUrl || '')}`),
 };
 
 export const analyticsApi = {

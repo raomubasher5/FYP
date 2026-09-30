@@ -10,10 +10,13 @@ const config = {
     allowedHeaders: ['Content-Type', 'Authorization']
   },
   ai: {
-    provider: process.env.AI_PROVIDER || 'mock', // 'mock' | 'gemini' | 'groq' | 'contextual'
+    provider: process.env.AI_PROVIDER || 'mock', // 'mock' | 'contextual' | 'gemini' | 'groq' | 'ollama'
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     groqApiKey: process.env.GROQ_API_KEY || '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
+    // Ollama — local models running on the user's PC (no API key, no internet)
+    ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+    ollamaModel: process.env.OLLAMA_MODEL || 'llama3.1',
     defaultModel: process.env.AI_MODEL || 'mock-model'
   },
   scheduler: {

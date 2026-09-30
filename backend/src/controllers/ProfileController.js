@@ -4,6 +4,7 @@ const { profileRepository, logRepository } = require('../repositories');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
+const config = require('../config');
 
 /**
  * ProfileController — business profile + AI provider configuration.
@@ -25,11 +26,15 @@ class ProfileController {
   });
 
   updateAIConfig = asyncHandler(async (req, res) => {
-    const { provider, apiKey, model } = req.body;
+    const { provider, apiKey, model, baseUrl } = req.body;
     const aiService = require('../services/ai');
-    aiService.reconfigure(provider, apiKey, model);
-    await logRepository.create(`Switched AI provider to [${String(provider).toUpperCase()}]`);
-    return ApiResponse.success(res, { provider: aiService.activeProviderName, model }, 'AI provider configured successfully');
+    aiService.reconfigure(provider, apiKey, model, provider === 'ollama' ? baseUrl : undefined);
+    await logRepository.create(`Switched AI provider to [${String(provider).toUpperCase()}]${model ? ' (' + model + ')' : ''}`);
+    return ApiResponse.success(res, {
+      provider: aiService.activeProviderName,
+      model,
+      baseUrl: provider === 'ollama' ? (baseUrl || config.ai.ollamaBaseUrl) : undefined
+    }, 'AI provider configured successfully');
   });
 }
 
