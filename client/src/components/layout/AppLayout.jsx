@@ -1,7 +1,8 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import { Outlet, useLocation } from 'react-router-dom';
+
 import Header from './Header';
+import React from 'react';
+import Sidebar from './Sidebar';
 import { Toast } from '../common';
 import { useApp } from '../../context/AppContext';
 
