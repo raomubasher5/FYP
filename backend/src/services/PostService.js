@@ -1,23 +1,33 @@
+'use strict';
+
 const postRepository = require('../repositories/PostRepository');
 const { accountRepository, logRepository } = require('../repositories');
 const publishingManager = require('./publishers');
 const AppError = require('../utils/AppError');
 
+/**
+ * PostService — post lifecycle & domain logic.
+ *
+ * Note on honesty: publishing runs in SANDBOX SIMULATION mode. No real
+ * platform API calls are made, no fake post URLs are fabricated, and no
+ * engagement metrics are invented. `metrics`/`sentiment` stay null until
+ * real platform data is recorded.
+ */
 class PostService {
-  getAllPosts(statusFilter = null) {
+  async getAllPosts(statusFilter = null) {
     if (statusFilter) {
-      return postRepository.findAll(p => p.status === statusFilter);
+      return postRepository.findAll({ status: statusFilter });
     }
     return postRepository.findAll();
   }
 
-  getPostById(id) {
-    const post = postRepository.findById(id);
+  async getPostById(id) {
+    const post = await postRepository.findById(id);
     if (!post) throw new AppError(`Post with ID ${id} not found`, 404);
     return post;
   }
 
-  createPost(payload) {
+  async createPost(payload) {
     const {
       topic,
       tone,
@@ -41,8 +51,8 @@ class PostService {
       tone: tone || 'Warm & Welcoming',
       mode,
       status,
-      scheduledTime: scheduledTime || new Date(Date.now() + 3600000).toISOString(),
-      createdAt: new Date().toISOString(),
+      scheduledTime: scheduledTime || new Date(Date.now() + 3600000),
+      createdAt: new Date(),
       imageUrl: imageUrl || null,
       imagePrompt: imagePrompt || '',
       platforms,
@@ -51,97 +61,75 @@ class PostService {
       sentiment: null
     };
 
-    const saved = postRepository.create(newPost);
-    logRepository.create(`[PostService] Created post "${newPost.topic}" with status [${newPost.status.toUpperCase()}]`);
+    const saved = await postRepository.create(newPost);
+    await logRepository.create(`[PostService] Created post "${newPost.topic}" with status [${newPost.status.toUpperCase()}]`);
     return saved;
   }
 
-  updatePost(id, updates) {
-    const existing = this.getPostById(id);
-    const updated = postRepository.update(id, updates);
-    logRepository.create(`[PostService] Updated post "${existing.topic}"`);
+  async updatePost(id, updates) {
+    const existing = await this.getPostById(id);
+    const allowed = ['topic', 'tone', 'mode', 'status', 'scheduledTime', 'imageUrl', 'imagePrompt', 'platforms', 'targetPlatforms'];
+    const clean = {};
+    allowed.forEach((k) => {
+      if (updates[k] !== undefined) clean[k] = updates[k];
+    });
+
+    const updated = await postRepository.update(id, clean);
+    await logRepository.create(`[PostService] Updated post "${existing.topic}"`);
     return updated;
   }
 
-  deletePost(id) {
-    const existing = this.getPostById(id);
-    const deleted = postRepository.delete(id);
+  async deletePost(id) {
+    const post = await this.getPostById(id);
+    const deleted = await postRepository.delete(id);
     if (deleted) {
-      logRepository.create(`[PostService] Deleted post "${existing.topic}"`);
+      await logRepository.create(`[PostService] Deleted post "${post.topic}"`);
     }
     return deleted;
   }
 
-  approveDraft(id) {
-    const post = this.getPostById(id);
-    if (post.status !== 'draft') {
-      throw new AppError(`Cannot approve post with status: ${post.status}`, 400);
-    }
-
-    const updated = postRepository.update(id, { status: 'scheduled' });
-    logRepository.create(`[Approval] Post "${post.topic}" approved for scheduling`);
+  async approveDraft(id) {
+    const post = await this.getPostById(id);
+    const updated = await postRepository.update(id, { status: 'scheduled' });
+    await logRepository.create(`[Approval] Post "${post.topic}" approved for scheduling`);
     return updated;
   }
 
   async publishPost(id) {
-    const post = this.getPostById(id);
-    const connectedAccounts = accountRepository.findConnected();
+    const post = await this.getPostById(id);
+    const connectedAccounts = await accountRepository.findConnected();
     const targetPlatforms = post.targetPlatforms || Object.keys(post.platforms || {});
     const executionResults = [];
 
     for (const platform of targetPlatforms) {
-      const account = connectedAccounts.find(a => a.platform === platform);
+      const account = connectedAccounts.find((a) => a.platform === platform);
       if (!account) {
         executionResults.push({
           platform,
           status: 'skipped',
-          reason: `No active connected account for ${platform}`
+          reason: `No connected ${platform} channel registered — add it in Channels`
         });
         continue;
       }
 
       const publisher = publishingManager.getPublisher(platform);
-      const res = await publisher.publish(post.platforms[platform], account);
+      const res = await publisher.publish(post.platforms[platform] || {}, account);
       executionResults.push(res);
     }
 
-    const baseLikes = Math.floor(Math.random() * 85) + 30;
-    const baseComments = Math.floor(Math.random() * 16) + 4;
-    const baseShares = Math.floor(Math.random() * 8) + 2;
-    const baseReach = baseLikes * 14 + Math.floor(Math.random() * 250);
-
-    const updated = postRepository.update(id, {
+    // No fabricated metrics: engagement data is only populated when real
+    // platform data is recorded (live API integration or manual import).
+    const updated = await postRepository.update(id, {
       status: 'published',
-      publishedAt: new Date().toISOString(),
-      executionResults,
-      metrics: {
-        likes: baseLikes,
-        comments: baseComments,
-        shares: baseShares,
-        reach: baseReach
-      },
-      sentiment: {
-        positive: 85,
-        neutral: 12,
-        negative: 3
-      }
+      publishedAt: new Date(),
+      executionResults
     });
 
-    // Ingest real dynamic comments for this specific campaign topic
-    const topicKeywords = (post.topic || 'product').toLowerCase();
-    const dynamicComments = [
-      { id: `c-${Date.now()}-1`, author: 'alex_r', text: `This ${topicKeywords} looks fantastic! Can't wait to check it out.`, sentiment: 'Positive' },
-      { id: `c-${Date.now()}-2`, author: 'sam_m', text: `Always love your quality, will drop by this week.`, sentiment: 'Positive' },
-      { id: `c-${Date.now()}-3`, author: 'taylor_99', text: `Are these available all weekend or limited batch?`, sentiment: 'Neutral' },
-      { id: `c-${Date.now()}-4`, author: 'jordan_k', text: `Super excited for this!`, sentiment: 'Positive' }
-    ];
-
-    const db = require('../repositories/BaseRepository');
-    if (!Array.isArray(db.data.sampleComments)) db.data.sampleComments = [];
-    db.data.sampleComments.unshift(...dynamicComments);
-    db.persist();
-
-    logRepository.create(`[Publisher] Autonomous dispatch complete for "${post.topic}" on [${targetPlatforms.join(', ')}]`);
+    const published = executionResults.filter((r) => r.status === 'success').length;
+    const skipped = executionResults.length - published;
+    await logRepository.create(
+      `[Publisher] Sandbox dispatch recorded for "${post.topic}" — ${published} channel receipt(s)${skipped ? `, ${skipped} skipped (no connected channel)` : ''}. No live platform calls made.`
+    );
     return { post: updated, executionResults };
   }
 }

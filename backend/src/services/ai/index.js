@@ -1,8 +1,18 @@
+'use strict';
+
 const config = require('../../config');
 const GeminiProvider = require('./GeminiProvider');
 const GroqProvider = require('./GroqProvider');
+const MockAIProvider = require('./MockAIProvider');
 const ContextualAIProvider = require('./ContextualAIProvider');
 
+/**
+ * AIFactory — creates the configured AI provider (Factory Pattern).
+ *  - 'gemini'      -> real Google Gemini LLM (needs GEMINI_API_KEY)
+ *  - 'groq'        -> real Groq Llama (needs GROQ_API_KEY)
+ *  - 'mock'        -> fully offline template engine, no network, no images
+ *  - 'contextual'  -> offline contextual template engine + live AI images
+ */
 class AIFactory {
   static getProvider(providerType = config.ai.provider) {
     const selected = (providerType || '').toLowerCase();
@@ -15,7 +25,10 @@ class AIFactory {
       return new GroqProvider(config.ai.groqApiKey, config.ai.defaultModel || 'llama-3.3-70b-versatile');
     }
 
-    // Default real dynamic generation engine with real live AI image generator
+    if (selected === 'mock') {
+      return new MockAIProvider();
+    }
+
     return new ContextualAIProvider();
   }
 }
@@ -26,14 +39,21 @@ class AIService {
   }
 
   reconfigure(providerType, apiKey, model) {
-    if (providerType === 'gemini') {
+    const selected = (providerType || '').toLowerCase();
+    if (selected === 'gemini') {
       this.provider = new GeminiProvider(apiKey, model || 'gemini-1.5-flash');
-    } else if (providerType === 'groq') {
+    } else if (selected === 'groq') {
       this.provider = new GroqProvider(apiKey, model || 'llama-3.3-70b-versatile');
+    } else if (selected === 'mock') {
+      this.provider = new MockAIProvider();
     } else {
       this.provider = new ContextualAIProvider();
     }
     console.log(`[AIService] Reconfigured active AI provider to: ${this.provider.name}`);
+  }
+
+  get activeProviderName() {
+    return this.provider.name;
   }
 
   async generateMultiPlatformPost(context) {

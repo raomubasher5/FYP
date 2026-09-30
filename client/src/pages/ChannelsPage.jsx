@@ -10,6 +10,8 @@ export default function ChannelsPage() {
       accounts={accounts}
       onToggleAccount={actions.toggleAccount}
       onSetAccountMode={actions.setAccountMode}
+      onAddAccount={actions.addAccount}
+      onRemoveAccount={actions.removeAccount}
       onNotify={notify}
     />
   );

@@ -6,11 +6,16 @@
   "scripts": {
     "start": "node backend/src/server.js",
     "dev": "node backend/src/server.js",
+    "dev:mongo": "node scripts/mongo-local.js",
     "build": "cd client && npm run build",
     "setup": "npm install && cd client && npm install && npm run build"
   },
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongoose": "^8.9.5"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.3"
   }
 }

@@ -54,7 +54,7 @@ export default function CalendarTab({ posts, profile, onPublishNow, setActiveTab
 
           <button
             onClick={() => setActiveTab('studio')}
-            className="flex items-center space-x-1.5 px-4 py-2 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-bold text-xs rounded-xl shadow-xs transition active:scale-[0.99] cursor-pointer"
+            className="flex items-center space-x-1.5 px-4 py-2 blotato-cta font-bold text-xs rounded-xl shadow-xs transition active:scale-[0.99] cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Post</span>
@@ -142,7 +142,7 @@ export default function CalendarTab({ posts, profile, onPublishNow, setActiveTab
                             onPublishNow(post.id);
                           }}
                           className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition"
-                          title="Simulate immediate publishing for FYP demonstration"
+                          title="Publish immediately in sandbox simulation mode — no live platform calls"
                         >
                           <Play className="w-3 h-3" />
                           <span>Publish Now</span>
@@ -218,7 +218,7 @@ export default function CalendarTab({ posts, profile, onPublishNow, setActiveTab
                   className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center space-x-1.5"
                 >
                   <Play className="w-3.5 h-3.5" />
-                  <span>Execute Publish Immediately (Demo)</span>
+                  <span>Execute Publish Immediately (Sandbox)</span>
                 </button>
               )}
             </div>

@@ -1,24 +1,32 @@
-class BasePublisher {
+'use strict';
+
+const BasePublisher = class {
   constructor(platformName) {
     this.platform = platformName;
   }
 
+  /**
+   * SANDBOX SIMULATION — records a local dispatch receipt.
+   * No real social platform API call is made, no real post URL is
+   * fabricated, and no engagement numbers are invented. `url` is null
+   * until a live API integration exists for this platform.
+   */
   async publish(content, account) {
-    // Standard mock latency & receipt generation
+    // Simulated dispatch latency
     await new Promise((r) => setTimeout(r, 150));
-    const postId = `${this.platform.toUpperCase()}_${Date.now()}_${Math.floor(Math.random() * 900 + 100)}`;
 
     return {
       platform: this.platform,
       account: account.handle,
       status: 'success',
-      platformPostId: postId,
+      simulated: true,
+      platformPostId: null,
       publishedAt: new Date().toISOString(),
       mode: account.mode || 'sandbox',
-      url: `https://${this.platform}.com/${account.handle.replace('@', '')}/status/${postId}`
+      url: null
     };
   }
-}
+};
 
 class TwitterPublisher extends BasePublisher {
   constructor() {
@@ -44,13 +52,23 @@ class TikTokPublisher extends BasePublisher {
   }
 }
 
+class LinkedInPublisher extends BasePublisher {
+  constructor() {
+    super('linkedin');
+  }
+}
+
+/**
+ * PublishingManager — Strategy Pattern: one publisher per platform.
+ */
 class PublishingManager {
   constructor() {
     this.publishers = {
       twitter: new TwitterPublisher(),
       instagram: new InstagramPublisher(),
       facebook: new FacebookPublisher(),
-      tiktok: new TikTokPublisher()
+      tiktok: new TikTokPublisher(),
+      linkedin: new LinkedInPublisher()
     };
   }
 

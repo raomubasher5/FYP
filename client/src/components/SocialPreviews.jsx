@@ -12,7 +12,8 @@ import {
   Check, 
   BarChart2, 
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export function TwitterPreview({ content, imageUrl, profile }) {
@@ -69,9 +70,13 @@ export function TwitterPreview({ content, imageUrl, profile }) {
       </div>
 
       {/* Media Attachment */}
-      {imageUrl && (
+      {imageUrl ? (
         <div className="mt-3 rounded-2xl overflow-hidden border border-neutral-800 max-h-64 bg-neutral-900 flex items-center justify-center">
           <img src={imageUrl} alt="Tweet media" className="w-full h-full object-cover" />
+        </div>
+      ) : (
+        <div className="mt-3 rounded-2xl overflow-hidden border border-dashed border-pink-500/40 max-h-64">
+          <MediaPlaceholder label="No media attached" hint="Image area ready — attach a visual or let the AI agent generate one" />
         </div>
       )}
 
@@ -99,26 +104,22 @@ export function TwitterPreview({ content, imageUrl, profile }) {
         </div>
       </div>
 
-      {/* Tweet Interaction Bar */}
+      {/* Tweet Interaction Bar — pre-publish preview, so no engagement counts are shown */}
       <div className="mt-2 flex items-center justify-between text-neutral-500 text-xs px-2 pt-1">
         <div className="flex items-center space-x-1 hover:text-sky-400 transition cursor-pointer">
           <MessageCircle className="w-4 h-4" />
-          <span>8</span>
         </div>
         <div className="flex items-center space-x-1 hover:text-emerald-400 transition cursor-pointer">
           <Repeat2 className="w-4 h-4" />
-          <span>3</span>
         </div>
-        <div 
-          onClick={() => setLiked(!liked)} 
+        <div
+          onClick={() => setLiked(!liked)}
           className={`flex items-center space-x-1 transition cursor-pointer ${liked ? 'text-rose-500' : 'hover:text-rose-400'}`}
         >
           <Heart className={`w-4 h-4 ${liked ? 'fill-rose-500' : ''}`} />
-          <span>{liked ? 43 : 42}</span>
         </div>
         <div className="flex items-center space-x-1 hover:text-sky-400 transition cursor-pointer">
           <BarChart2 className="w-4 h-4" />
-          <span>1.2K</span>
         </div>
         <div className="flex items-center space-x-1 hover:text-sky-400 transition cursor-pointer">
           <Share2 className="w-4 h-4" />
@@ -179,7 +180,7 @@ export function InstagramPreview({ content, imageUrl, profile }) {
         {imageUrl ? (
           <img src={imageUrl} alt="Instagram visual" className="w-full h-full object-cover transition duration-300 group-hover:scale-105" />
         ) : (
-          <div className="text-slate-600 text-xs">No media preview</div>
+          <MediaPlaceholder fill label="Your visual goes here" hint="Square crop — the AI agent can attach the perfect image" />
         )}
       </div>
 
@@ -197,11 +198,7 @@ export function InstagramPreview({ content, imageUrl, profile }) {
           <Bookmark className="w-5 h-5 cursor-pointer hover:text-slate-400 transition" />
         </div>
 
-        <div className="text-xs font-bold text-white">
-          {liked ? '185 likes' : '184 likes'}
-        </div>
-
-        {/* Caption */}
+        {/* Caption (pre-publish preview — no engagement counts shown) */}
         <div className="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">
           <span className="font-bold text-white mr-1.5">
             {profile?.businessName?.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'brand'}
@@ -269,9 +266,13 @@ export function FacebookPreview({ content, imageUrl, profile }) {
       </div>
 
       {/* Media Attachment */}
-      {imageUrl && (
+      {imageUrl ? (
         <div className="w-full max-h-72 overflow-hidden bg-slate-950 flex items-center justify-center border-y border-slate-800">
           <img src={imageUrl} alt="Facebook media" className="w-full object-cover" />
+        </div>
+      ) : (
+        <div className="w-full border-y border-dashed border-pink-500/40">
+          <MediaPlaceholder label="No media attached" hint="Link or image preview area" />
         </div>
       )}
 
@@ -288,17 +289,7 @@ export function FacebookPreview({ content, imageUrl, profile }) {
         </div>
       )}
 
-      {/* Reactions Bar */}
-      <div className="px-3.5 py-2 text-xs text-slate-400 border-b border-slate-800 flex items-center justify-between text-[11px]">
-        <div className="flex items-center space-x-1">
-          <span className="bg-blue-600 text-white rounded-full p-0.5 text-[9px]">👍</span>
-          <span className="bg-rose-500 text-white rounded-full p-0.5 text-[9px]">❤️</span>
-          <span className="text-slate-300 font-semibold ml-1">48</span>
-        </div>
-        <div>12 comments · 4 shares</div>
-      </div>
-
-      {/* Action Buttons */}
+      {/* Action Buttons (pre-publish preview — no engagement counts shown) */}
       <div className="grid grid-cols-3 text-center py-1 text-xs text-slate-300 font-medium">
         <button className="py-2 hover:bg-slate-800/80 flex items-center justify-center space-x-1 transition">
           <ThumbsUp className="w-4 h-4 text-blue-400" />
@@ -335,7 +326,7 @@ export function TikTokPreview({ content, imageUrl, profile }) {
         {imageUrl ? (
           <img src={imageUrl} alt="TikTok background" className="w-full h-full object-cover opacity-85" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-600 text-xs">Video Feed</div>
+          <MediaPlaceholder fill label="Video frame" hint="Your clip will play here" hintClassName="hidden" />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/90"></div>
       </div>
@@ -364,19 +355,17 @@ export function TikTokPreview({ content, imageUrl, profile }) {
           {profile?.businessName?.[0] || 'T'}
         </div>
 
+        {/* Pre-publish preview — no engagement counts shown */}
         <div className="flex flex-col items-center">
           <Heart className="w-7 h-7 text-white fill-white/90" />
-          <span className="text-[10px] font-bold mt-0.5">2.4K</span>
         </div>
 
         <div className="flex flex-col items-center">
           <MessageCircle className="w-7 h-7 text-white fill-white/80" />
-          <span className="text-[10px] font-bold mt-0.5">148</span>
         </div>
 
         <div className="flex flex-col items-center">
           <Bookmark className="w-7 h-7 text-white fill-white/80" />
-          <span className="text-[10px] font-bold mt-0.5">320</span>
         </div>
 
         <div className="flex flex-col items-center">
@@ -415,6 +404,24 @@ function EmptyPlatform({ platform }) {
       <Sparkles className="w-8 h-8 mx-auto mb-2 text-slate-600" />
       <p className="text-sm font-semibold text-slate-300">No output for {platform}</p>
       <p className="text-xs text-slate-500 mt-1">Check {platform} in the target platforms selector on the left.</p>
+    </div>
+  );
+}
+
+/* Blotato-style branded placeholder shown in the platform mockups when a post
+   has no image/visual attached yet. */
+function MediaPlaceholder({ label, hint, fill = false, hintClassName = '' }) {
+  return (
+    <div className={`w-full flex items-center justify-center bg-gradient-to-br from-pink-500/15 via-violet-600/10 to-fuchsia-500/15 ${fill ? 'h-full' : ''}`}>
+      <div className="flex flex-col items-center justify-center text-center px-6 py-6">
+        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-500 to-violet-600 flex items-center justify-center shadow-lg shadow-pink-500/30 mb-2.5">
+          <ImageIcon className="w-5.5 h-5.5 text-white" />
+        </div>
+        <p className="text-xs font-semibold text-slate-200">{label}</p>
+        {hint && (
+          <p className={`text-[10px] text-slate-400 mt-1 max-w-[210px] leading-relaxed ${hintClassName}`}>{hint}</p>
+        )}
+      </div>
     </div>
   );
 }

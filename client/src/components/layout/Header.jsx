@@ -38,7 +38,7 @@ export default function Header() {
   const connectedChannels = accounts.filter(a => a.status === 'connected');
 
   return (
-    <header className="h-16 border-b border-stone-200/80 dark:border-stone-800/80 bg-white/80 dark:bg-[#0c0a09]/80 backdrop-blur-xl px-6 flex items-center justify-between sticky top-0 z-40 select-none transition-colors duration-200">
+    <header className="h-16 border-b border-stone-200/80 dark:border-stone-800/80 bg-white/80 dark:bg-[#0a0512]/80 backdrop-blur-xl px-6 flex items-center justify-between sticky top-0 z-40 select-none transition-colors duration-200">
       {/* Breadcrumb & Title */}
       <div className="flex items-center space-x-3">
         <div>
@@ -97,7 +97,7 @@ export default function Header() {
         {path !== 'composer' && (
           <button
             onClick={() => navigate('/composer')}
-            className="flex items-center space-x-1.5 px-4 py-2 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-semibold text-xs rounded-xl shadow-sm hover:shadow transition active:scale-[0.99] cursor-pointer"
+            className="flex items-center space-x-1.5 px-4 py-2 blotato-cta font-semibold text-xs rounded-full transition active:scale-[0.99] cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Create Campaign</span>

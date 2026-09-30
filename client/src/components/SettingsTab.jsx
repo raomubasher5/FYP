@@ -81,7 +81,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
         <button
           onClick={handleSubmit}
           disabled={saving}
-          className="flex items-center space-x-2 px-6 py-2.5 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-semibold text-xs rounded-xl shadow-sm hover:shadow transition disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+          className="flex items-center space-x-2 px-6 py-2.5 blotato-cta font-semibold text-xs rounded-xl shadow-sm hover:shadow transition disabled:opacity-50 cursor-pointer active:scale-[0.99]"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Saving...' : 'Save Brand Settings'}</span>
@@ -215,7 +215,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
               {/* Contextual / Vision */}
               <label className={`p-3.5 rounded-2xl border cursor-pointer text-xs flex items-center justify-between transition ${
                 aiConfig.provider === 'contextual' 
-                  ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-sm' 
+                  ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent shadow-sm' 
                   : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700'
               }`}>
                 <div className="flex items-center space-x-3">
@@ -227,9 +227,9 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
                     className="accent-stone-900 dark:accent-stone-100 w-4 h-4 cursor-pointer"
                   />
                   <div>
-                    <div className="font-bold text-xs">Live Native AI Vision Engine</div>
+                    <div className="font-bold text-xs">Contextual Engine (offline templates)</div>
                     <div className={`text-[10px] ${aiConfig.provider === 'contextual' ? 'text-stone-300 dark:text-stone-600' : 'text-stone-500 dark:text-stone-400'}`}>
-                      Zero setup required · Real live AI image synthesis
+                      No API key needed · template-based copy + live AI images
                     </div>
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
               {/* Gemini */}
               <label className={`p-3.5 rounded-2xl border cursor-pointer text-xs flex items-center justify-between transition ${
                 aiConfig.provider === 'gemini' 
-                  ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-sm' 
+                  ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent shadow-sm' 
                   : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700'
               }`}>
                 <div className="flex items-center space-x-3">
@@ -275,7 +275,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
               {/* Groq */}
               <label className={`p-3.5 rounded-2xl border cursor-pointer text-xs flex items-center justify-between transition ${
                 aiConfig.provider === 'groq' 
-                  ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-sm' 
+                  ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent shadow-sm' 
                   : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700'
               }`}>
                 <div className="flex items-center space-x-3">
@@ -327,7 +327,7 @@ export default function SettingsTab({ profile, onUpdateProfile, onNotify }) {
               type="button"
               onClick={handleSaveAIConfig}
               disabled={savingAI}
-              className="w-full py-2.5 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-sm cursor-pointer active:scale-[0.99]"
+              className="w-full py-2.5 blotato-cta rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-sm cursor-pointer active:scale-[0.99]"
             >
               <Cpu className="w-3.5 h-3.5" />
               <span>{savingAI ? 'Activating Provider...' : 'Apply AI Model Provider'}</span>

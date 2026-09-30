@@ -1,74 +1,119 @@
-const db = require('./BaseRepository');
+'use strict';
 
+const BusinessProfile = require('../models/BusinessProfile');
+const SocialAccount = require('../models/SocialAccount');
+const Log = require('../models/Log');
+const Comment = require('../models/Comment');
+
+/**
+ * AccountRepository — Data Access Layer for user-registered social channels.
+ */
 class AccountRepository {
-  findAll() {
-    return db.data.socialAccounts;
+  async findAll() {
+    return SocialAccount.find({}).sort({ createdAt: 1 }).lean();
   }
 
-  findById(id) {
-    return db.data.socialAccounts.find(a => a.id === id) || null;
+  async findById(id) {
+    return SocialAccount.findOne({ id }).lean();
   }
 
-  findByPlatform(platform) {
-    return db.data.socialAccounts.find(a => a.platform === platform) || null;
+  async findByPlatform(platform) {
+    return SocialAccount.findOne({ platform, status: 'connected' }).lean();
   }
 
-  findConnected() {
-    return db.data.socialAccounts.filter(a => a.status === 'connected');
+  async findConnected() {
+    return SocialAccount.find({ status: 'connected' }).lean();
   }
 
-  update(id, updates) {
-    const idx = db.data.socialAccounts.findIndex(a => a.id === id);
-    if (idx === -1) return null;
+  async create(data) {
+    const doc = await SocialAccount.create(data);
+    return doc.toJSON();
+  }
 
-    db.data.socialAccounts[idx] = { ...db.data.socialAccounts[idx], ...updates };
-    db.persist();
-    return db.data.socialAccounts[idx];
+  async update(id, updates) {
+    const doc = await SocialAccount.findOneAndUpdate({ id }, { $set: updates }, { new: true });
+    return doc ? doc.toJSON() : null;
+  }
+
+  async delete(id) {
+    const res = await SocialAccount.deleteOne({ id });
+    return res.deletedCount > 0;
   }
 }
 
+/**
+ * ProfileRepository — singleton business profile document.
+ * `get()` returns null until the user creates a profile (no seeded data).
+ */
 class ProfileRepository {
-  get() {
-    return db.data.businessProfile;
+  async get() {
+    const doc = await BusinessProfile.findOne({ id: 'business' }).lean();
+    return doc || null;
   }
 
-  update(updates) {
-    db.data.businessProfile = { ...db.data.businessProfile, ...updates };
-    db.persist();
-    return db.data.businessProfile;
+  async update(updates) {
+    const doc = await BusinessProfile.findOneAndUpdate(
+      { id: 'business' },
+      { $set: { id: 'business', ...updates } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+    return doc.toJSON();
   }
 }
 
+/**
+ * LogRepository — operational audit log.
+ */
 class LogRepository {
-  findAll(limit = 100) {
-    return db.data.logs.slice(0, limit);
+  async findAll(limit = 100) {
+    return Log.find({}).sort({ timestamp: -1 }).limit(limit).lean();
   }
 
-  create(message, level = 'info') {
-    const entry = {
-      timestamp: new Date().toISOString(),
-      level,
-      message
-    };
-    db.data.logs.unshift(entry);
-    if (db.data.logs.length > 200) {
-      db.data.logs = db.data.logs.slice(0, 200);
+  async create(message, level = 'info') {
+    const doc = await Log.create({ timestamp: new Date(), level, message });
+    // Keep the log bounded (most recent 200 entries).
+    const total = await Log.countDocuments();
+    if (total > 200) {
+      const excess = await Log.find({}).sort({ timestamp: 1 }).limit(total - 200).select('_id').lean();
+      if (excess.length) {
+        await Log.deleteMany({ _id: { $in: excess.map((e) => e._id) } });
+      }
     }
-    db.persist();
-    return entry;
+    return doc.toJSON();
   }
 
-  getComments() {
-    return db.data.sampleComments || [];
+  /** Clear workspace operational data (posts handled by caller) — demo reset. */
+  async clear() {
+    await Log.deleteMany({});
+  }
+}
+
+/**
+ * CommentRepository — real audience comments imported for sentiment analysis.
+ */
+class CommentRepository {
+  async findAll(limit = 50) {
+    return Comment.find({}).sort({ createdAt: -1 }).limit(limit).lean();
   }
 
-  resetAll() {
-    return db.reset();
+  async create(data) {
+    const doc = await Comment.create(data);
+    return doc.toJSON();
+  }
+
+  async updateSentiment(id, sentiment) {
+    const doc = await Comment.findOneAndUpdate({ id }, { $set: { sentiment } }, { new: true });
+    return doc ? doc.toJSON() : null;
+  }
+
+  async clear() {
+    await Comment.deleteMany({});
   }
 }
 
 module.exports = {
   accountRepository: new AccountRepository(),
   profileRepository: new ProfileRepository(),
-  logRepository: new LogRepository()
+  logRepository: new LogRepository(),
+  commentRepository: new CommentRepository()
 };

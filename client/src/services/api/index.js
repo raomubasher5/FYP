@@ -13,8 +13,10 @@ export const postApi = {
 
 export const accountApi = {
   getAll: () => apiClient.get('/accounts'),
+  create: (data) => apiClient.post('/accounts', data),
   toggle: (id) => apiClient.post(`/accounts/${id}/toggle`, {}),
   setMode: (id, mode) => apiClient.post(`/accounts/${id}/mode`, { mode }),
+  delete: (id) => apiClient.delete(`/accounts/${id}`),
 };
 
 export const profileApi = {
@@ -25,6 +27,7 @@ export const profileApi = {
 
 export const analyticsApi = {
   getOverview: () => apiClient.get('/analytics'),
+  addComment: (data) => apiClient.post('/analytics/comments', data),
   getLogs: () => apiClient.get('/logs'),
   resetDemo: () => apiClient.post('/system/reset', {}),
 };

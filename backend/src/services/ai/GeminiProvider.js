@@ -1,4 +1,5 @@
 const BaseAIProvider = require('./BaseAIProvider');
+const InsightEngine = require('../insights/InsightEngine');
 
 class GeminiProvider extends BaseAIProvider {
   constructor(apiKey, model = 'gemini-1.5-flash') {
@@ -73,15 +74,15 @@ Return ONLY valid JSON (no markdown formatting, no backticks, no code blocks) ma
 
     const parsed = JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
 
-    // Generate matching live image URL using Unsplash or Pollinations
-    const encodedTopic = encodeURIComponent(`${industry} ${topic}`);
-    const imageUrl = `https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80`;
+    // Real image generated from the LLM's own image prompt (Pollinations diffusion API)
+    const imagePrompt = parsed.imagePrompt || `Professional promotional photo for ${topic}`;
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=800&height=800&nologo=true`;
 
     return {
       provider: `Google Gemini (${this.model})`,
       coreTopic: topic,
       toneUsed: tone,
-      imagePrompt: parsed.imagePrompt || `Professional promotional photo for ${topic}`,
+      imagePrompt,
       imageUrl,
       platforms: parsed.platforms,
       timestamp: new Date().toISOString()
@@ -90,9 +91,10 @@ Return ONLY valid JSON (no markdown formatting, no backticks, no code blocks) ma
 
   async analyzeSentiment(comments = []) {
     if (!comments.length) {
+      // Honest: no comments imported yet -> no sentiment to report
       return {
         provider: this.name,
-        metrics: { positive: 0, neutral: 0, negative: 0 },
+        metrics: null,
         analyzedComments: []
       };
     }
@@ -140,22 +142,8 @@ Return ONLY a JSON array of objects: [{"id": string, "sentiment": "Positive" | "
   }
 
   async getRecommendations({ recentPosts = [] }) {
-    return [
-      {
-        id: 'rec-gemini-1',
-        type: 'timing',
-        title: 'Gemini Schedule Optimizer',
-        message: 'Your engagement peaks during midday lunch hours (12:30 PM - 2:00 PM).',
-        action: 'Update Posting Times'
-      },
-      {
-        id: 'rec-gemini-2',
-        type: 'content',
-        title: 'Storytelling Campaign Recommendation',
-        message: 'Behind-the-scenes content highlighting artisan craftsmanship yields 2.8x higher comment density.',
-        action: 'Draft Story Post'
-      }
-    ];
+    // Data-driven: insights computed from the user's REAL published posts
+    return InsightEngine.build(recentPosts);
   }
 }
 

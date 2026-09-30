@@ -1,4 +1,5 @@
 const BaseAIProvider = require('./BaseAIProvider');
+const InsightEngine = require('../insights/InsightEngine');
 
 class MockAIProvider extends BaseAIProvider {
   constructor() {
@@ -21,7 +22,9 @@ class MockAIProvider extends BaseAIProvider {
     const brandTag = businessName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'brand';
 
     const imagePrompt = `High quality commercial product photo of ${cleanTopic} for ${businessName} in ${industry} industry. Warm aesthetic, soft lighting, professional 4k advertising shoot.`;
-    const imageUrl = `https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80`;
+    // Offline mock provider: no image is fabricated. The UI shows a
+    // "no media" placeholder until a real image URL is supplied.
+    const imageUrl = null;
 
     const platforms = {};
 
@@ -47,7 +50,8 @@ class MockAIProvider extends BaseAIProvider {
         platform: 'facebook',
         text: `Big news from ${businessName}! 🎉\n\nWe are proud to introduce our ${cleanTopic}. Crafted with care and passion for our loyal patrons.\n\n👉 Learn more at our page or visit us in-store. Tag someone who shouldn't miss this!`,
         callToAction: 'Learn More',
-        link: 'https://example.com'
+        // No fabricated destination link — set a real URL in your profile later.
+        link: null
       };
     }
 
@@ -109,9 +113,18 @@ class MockAIProvider extends BaseAIProvider {
       return { ...c, sentiment };
     });
 
-    const total = comments.length || 1;
-    const positive = Math.round((positiveCount / total) * 100) || 75;
-    const negative = Math.round((negativeCount / total) * 100) || 5;
+    if (!comments.length) {
+      // Honest: no comments imported yet -> no sentiment to report
+      return {
+        provider: this.name,
+        metrics: null,
+        analyzedComments: []
+      };
+    }
+
+    const total = comments.length;
+    const positive = Math.round((positiveCount / total) * 100);
+    const negative = Math.round((negativeCount / total) * 100);
     const neutral = 100 - positive - negative;
 
     return {
@@ -123,30 +136,8 @@ class MockAIProvider extends BaseAIProvider {
 
   async getRecommendations({ recentPosts = [] }) {
     await new Promise((r) => setTimeout(r, 200));
-
-    return [
-      {
-        id: 'rec-1',
-        type: 'timing',
-        title: 'Optimal Posting Window Detected',
-        message: 'Audience engagement peaks by 42% on Instagram between 1:00 PM and 3:00 PM on Thursdays.',
-        action: 'Apply to Schedule'
-      },
-      {
-        id: 'rec-2',
-        type: 'content',
-        title: 'Top Performing Topic: Behind the Scenes',
-        message: 'Behind-the-scenes production clips earned 2.4x more comments than standard discount announcements.',
-        action: 'Draft New Story'
-      },
-      {
-        id: 'rec-3',
-        type: 'format',
-        title: 'Short-Form Video Trend on TikTok',
-        message: 'Videos under 18 seconds with ambient artisan sound had an 81% completion rate.',
-        action: 'Explore Script Ideas'
-      }
-    ];
+    // Data-driven: insights computed from the user's REAL published posts
+    return InsightEngine.build(recentPosts);
   }
 }
 

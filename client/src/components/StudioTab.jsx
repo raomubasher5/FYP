@@ -34,10 +34,10 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
   const [editableContent, setEditableContent] = useState({});
 
   const sampleIdeas = [
-    `Weekend Single-Origin Pour-Over Tasting Event`,
-    `Behind-the-Scenes: Roasting our Ethiopian Yirgacheffe batch`,
-    `Student & Remote Worker Discount: Free pastry with large latte`,
-    `New Organic Matcha Latte on seasonal menu`
+    `Announce a new product or service`,
+    `Behind the scenes: your team at work`,
+    `Share a customer success story`,
+    `Promote a limited-time offer`
   ];
 
   const handleTogglePlatform = (p) => {
@@ -209,7 +209,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
                       onClick={() => handleTogglePlatform(p.id)}
                       className={`flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                         isChecked 
-                          ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-xs' 
+                          ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent shadow-xs' 
                           : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700'
                       }`}
                     >
@@ -248,7 +248,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
                     onClick={() => setTone(t.label)}
                     className={`p-2.5 rounded-xl text-[11px] font-medium border text-left transition flex items-center space-x-1.5 cursor-pointer ${
                       tone === t.label
-                        ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 font-bold shadow-xs'
+                        ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent font-bold shadow-xs'
                         : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700'
                     }`}
                   >
@@ -285,7 +285,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
 
                 <label className={`p-3 rounded-xl border cursor-pointer text-xs flex flex-col justify-between transition ${
                   mode === 'auto'
-                    ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-xs'
+                    ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent shadow-xs'
                     : 'bg-white dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-400'
                 }`}>
                   <div className="flex items-center space-x-2">
@@ -349,7 +349,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
               type="button"
               onClick={handleGenerate}
               disabled={loading}
-              className="w-full py-3.5 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-bold text-xs rounded-2xl shadow-sm hover:shadow transition transform active:scale-[0.99] flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
+              className="w-full py-3.5 blotato-cta font-bold text-xs rounded-2xl transition transform active:scale-[0.99] flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -389,7 +389,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
                       onClick={() => setActivePlatformTab(p)}
                       className={`px-3 py-1.5 text-xs rounded-lg font-bold capitalize transition cursor-pointer ${
                         activePlatformTab === p
-                          ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 shadow-xs'
+                          ? 'bg-pink-500 text-white shadow-xs'
                           : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
                       }`}
                     >
@@ -481,7 +481,8 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
                   <span>Channel Native Preview:</span>
                   <span className="text-[10px] text-stone-500 uppercase font-mono">Channel Verified</span>
                 </div>
-                <div className="p-6 bg-stone-50 dark:bg-stone-950/70 rounded-2xl border border-stone-200/80 dark:border-stone-800 flex justify-center shadow-inner">
+                {/* Keyed by post id so fresh AI results pop in with a scale-in */}
+                <div key={generatedData?.postId} className="p-6 bg-stone-50 dark:bg-stone-950/70 rounded-2xl border border-stone-200/80 dark:border-stone-800 flex justify-center shadow-inner animate-scale-in">
                   {activePlatformTab === 'twitter' && (
                     <TwitterPreview 
                       content={editableContent.twitter} 
@@ -527,7 +528,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
                   <button
                     type="button"
                     onClick={() => handleSaveOrSchedule(false)}
-                    className="px-5 py-2.5 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-bold text-xs rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2 cursor-pointer active:scale-[0.99]"
+                    className="px-5 py-2.5 blotato-cta font-bold text-xs rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2 cursor-pointer active:scale-[0.99]"
                   >
                     <CheckCircle className="w-4 h-4" />
                     <span>{mode === 'auto' ? 'Approve & Schedule' : 'Save as Review Draft'}</span>
@@ -540,7 +541,7 @@ export default function StudioTab({ profile, onGeneratePost, onSchedulePost, onN
                     title="Dispatches to live channels immediately for demo"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Direct Publish (Demo)</span>
+                    <span>Direct Publish (Sandbox)</span>
                   </button>
                 </div>
               </div>
