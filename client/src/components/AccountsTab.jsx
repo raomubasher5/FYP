@@ -8,7 +8,10 @@ import {
   Info,
   Plus,
   Trash2,
-  UserRound
+  UserRound,
+  Link2,
+  Loader2,
+  Zap
 } from 'lucide-react';
 
 const PLATFORMS = [
@@ -21,12 +24,41 @@ const PLATFORMS = [
 
 const EMPTY_FORM = { platform: 'instagram', name: '', handle: '', followers: '', avatar: '' };
 
+// Platforms with a real (live) OAuth + publishing integration
+const LIVE_PLATFORMS = [
+  { id: 'twitter', label: 'X (Twitter)' },
+  { id: 'instagram', label: 'Instagram Business' },
+  { id: 'facebook', label: 'Facebook Page' },
+  { id: 'tiktok', label: 'TikTok' }
+];
+
 export default function AccountsTab({ accounts, onToggleAccount, onSetAccountMode, onAddAccount, onRemoveAccount, onNotify }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [showForm, setShowForm] = useState(accounts.length === 0);
   const [saving, setSaving] = useState(false);
+  const [connecting, setConnecting] = useState(null);
 
   const isConnected = (acc) => acc.status === 'connected';
+  const isLive = (acc) => acc.mode === 'live' && acc.credentials;
+
+  /** Kick off the platform OAuth flow (full-page redirect to the consent screen). */
+  const handleConnect = async (platform) => {
+    setConnecting(platform);
+    try {
+      const res = await fetch(`/api/accounts/${platform}/connect`, { redirect: 'manual' });
+      if (res.type === 'opaqueredirect' || (res.status >= 300 && res.status < 400)) {
+        // Server says "go to the platform" — follow it for real
+        window.location.href = `/api/accounts/${platform}/connect`;
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      onNotify(data?.message || 'Live connection failed', 'error');
+    } catch (err) {
+      onNotify('Live connection failed: ' + err.message, 'error');
+    } finally {
+      setConnecting(null);
+    }
+  };
 
   const handleToggle = (acc) => {
     onToggleAccount(acc.id);
@@ -84,14 +116,14 @@ export default function AccountsTab({ accounts, onToggleAccount, onSetAccountMod
           </div>
           <h1 className="text-xl md:text-2xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight">Channels & Connections</h1>
           <p className="text-stone-500 dark:text-stone-400 text-xs mt-1">
-            Register the real channels of your business. Publishing currently runs in sandbox simulation mode.
+            Register your business channels — or connect them LIVE via OAuth. Unconnected channels publish as clearly-labeled sandbox simulations.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="flex items-center space-x-2 text-xs bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 px-3.5 py-2 rounded-2xl text-amber-700 dark:text-amber-400 shadow-2xs">
             <Info className="w-4 h-4" />
-            <span>Sandbox Mode — no live API calls</span>
+            <span>Sandbox-safe: unconnected channels never post for real</span>
           </div>
           <button
             onClick={() => setShowForm((s) => !s)}
@@ -101,6 +133,78 @@ export default function AccountsTab({ accounts, onToggleAccount, onSetAccountMod
             <span>{showForm ? 'Hide Form' : 'Add Channel'}</span>
           </button>
         </div>
+      </div>
+
+      {/* Live Platform Connections (real publishing via OAuth) */}
+      <div className="glass-panel rounded-3xl p-6 shadow-sm border border-stone-200/80 dark:border-stone-800">
+        <div className="flex items-center space-x-2 text-stone-500 dark:text-stone-400 text-xs font-bold uppercase tracking-wider mb-1 font-mono">
+          <Zap className="w-4 h-4" />
+          <span>Live Publishing — Real Platforms</span>
+        </div>
+        <p className="text-xs text-stone-500 dark:text-stone-400 mb-4">
+          Connect your real accounts once (OAuth). Posts from a connected channel go <strong>LIVE</strong> — to the actual platform. Everything else stays a safe simulation.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {LIVE_PLATFORMS.map((p) => {
+            const live = (accounts || []).find((a) => a.platform === p.id && isLive(a));
+            return (
+              <div
+                key={p.id}
+                className={`rounded-2xl border p-4 flex flex-col items-start space-y-2.5 transition ${
+                  live
+                    ? 'border-emerald-300 dark:border-emerald-500/40 bg-emerald-50/70 dark:bg-emerald-500/5'
+                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/40'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-xs text-stone-900 dark:text-stone-100">{p.label}</span>
+                  {live ? (
+                    <span className="flex items-center space-x-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 px-2 py-0.5 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      LIVE
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-stone-400 dark:text-stone-500 border border-stone-200 dark:border-stone-700 px-2 py-0.5 rounded-full">
+                      SANDBOX
+                    </span>
+                  )}
+                </div>
+
+                {live ? (
+                  <>
+                    <div className="text-[11px] font-mono text-stone-600 dark:text-stone-300 truncate w-full" title={live.handle}>
+                      {live.handle}
+                    </div>
+                    <button
+                      onClick={() => onRemoveAccount(live.id)}
+                      className="text-[10px] font-bold text-rose-500 hover:text-rose-600 cursor-pointer"
+                    >
+                      Disconnect
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => handleConnect(p.id)}
+                    disabled={connecting === p.id}
+                    className="w-full py-2 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-bold text-xs rounded-xl transition cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-1.5"
+                  >
+                    {connecting === p.id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Link2 className="w-3.5 h-3.5" />
+                    )}
+                    <span>{connecting === p.id ? 'Opening…' : 'Connect (OAuth)'}</span>
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-3 leading-relaxed">
+          First time? Create the platform's free app and put its keys in <span className="font-mono">.env</span> — step-by-step instructions are in <span className="font-mono">PROJECT_GUIDE.md</span> (section: Live Platform Publishing).
+        </p>
       </div>
 
       {/* Add Channel Form */}

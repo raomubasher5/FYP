@@ -160,13 +160,16 @@ automatrix/
 | GET/PUT/DELETE | `/posts/:id` | read / update / delete |
 | POST | `/posts/generate` | AI multi-platform generation |
 | POST | `/posts/:id/approve` | draft -> scheduled |
-| POST | `/posts/:id/publish-now` | publish (sandbox simulation) |
+| POST | `/posts/:id/publish-now` | publish (LIVE for connected channels, sandbox simulation otherwise) |
 | GET/PUT | `/profile` | business profile (singleton) |
 | POST | `/profile/ai-config` | switch AI provider at runtime |
 | GET/POST | `/accounts` | list / **register real channels** |
 | POST | `/accounts/:id/toggle` | connect / disconnect |
 | POST | `/accounts/:id/mode` | sandbox / live mode |
 | DELETE | `/accounts/:id` | remove channel |
+| GET | `/accounts/:platform/connect` | start live OAuth (X / Facebook / Instagram / TikTok) |
+| GET | `/accounts/live-status` | which platforms are connected live |
+| GET | `/auth/callback/:platform` | platform OAuth redirect target |
 | GET | `/analytics` | real overview, sentiment, comments, recommendations, 7-day trend |
 | POST | `/analytics/comments` | import a real audience comment |
 | GET | `/logs` | audit log |
@@ -184,3 +187,87 @@ automatrix/
 | `GEMINI_API_KEY` / `GROQ_API_KEY` | — | Required for the corresponding provider |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | `http://localhost:11434` / `llama3.1` | Ollama (local models) — no API key needed |
 | `SCHEDULER_INTERVAL_MS` | `4000` | Background publish-worker tick |
+| `PUBLIC_URL` | `http://localhost:3000` | Public URL of this server (OAuth callbacks) |
+| `X_CLIENT_ID` / `X_CLIENT_SECRET` | — | X (Twitter) app credentials → enables LIVE X publishing |
+| `META_APP_ID` / `META_APP_SECRET` | — | Meta app credentials → enables LIVE Facebook + Instagram publishing |
+| `TIKTOK_CLIENT_KEY` / `TIKTOK_CLIENT_SECRET` | — | TikTok client credentials → enables LIVE TikTok publishing |
+| `X_API_BASE` / `X_UPLOAD_BASE` / `X_AUTH_BASE` | `https://api.twitter.com` / `https://upload.twitter.com` / `https://x.com` | Overridable (used by the integration test) |
+| `META_GRAPH_BASE` / `META_API_VERSION` | `https://graph.facebook.com` / `v19.0` | Overridable (used by the integration test) |
+| `TIKTOK_API_BASE` | `https://open.tiktokapis.com` | Overridable (used by the integration test) |
+
+---
+
+## 6. Live Platform Publishing (Real Integration)
+
+Automatrix does **two** things with channels, and both are visible in the UI:
+
+| Mode | What happens on publish | When |
+|---|---|---|
+| **Sandbox** (default) | Simulated receipt, clearly labeled `simulated: true` in the UI and logs. **Zero** calls to real platforms. | Channel has no OAuth credentials |
+| **Live** | A real HTTP call to the platform's official API with the stored OAuth token. Receipt carries the real platform post id. | Channel was connected via OAuth in the app |
+
+The dispatch decision lives in one place: `backend/src/services/publishers/index.js`
+(`account.mode === 'live' && account.credentials` → real publisher, else sandbox).
+
+### Platform support
+
+| Platform | OAuth | Publish API | Limits (free tier) |
+|---|---|---|---|
+| X (Twitter) | OAuth 2.0 + **PKCE** | `POST /2/tweets` + v1.1 media upload (base64) | 500 posts/month (Free) |
+| Facebook Page | Meta OAuth (FB Login) | `POST /me/feed` or `/me/photos` | Page role required |
+| Instagram Business | same Meta app | container `/{ig}/media` → `media_publish` | Business/Creator account linked to a Page |
+| TikTok | OAuth 2.0 (v2) | `POST /v2/post/publish/video/init/` (PULL_FROM_URL) | Direct Post capability |
+
+### One-time setup (on your machine)
+
+1. **X** — [developer.twitter.com](https://developer.twitter.com) → Create app (Free) →
+   OAuth 2.0: set callback to `http://localhost:3000/api/auth/callback/twitter` →
+   copy Client ID + Client Secret into `.env` (`X_CLIENT_ID` / `X_CLIENT_SECRET`).
+
+2. **Meta (Facebook + Instagram)** — [developers.facebook.com](https://developers.facebook.com) →
+   Create app (Business) → add products **Facebook Login** and **Instagram Graph API** →
+   Facebook Login settings: add valid OAuth redirect URI
+   `http://localhost:3000/api/auth/callback/facebook` →
+   copy App ID + App Secret into `.env` (`META_APP_ID` / `META_APP_SECRET`).
+   Your Instagram account must be a **Business/Creator** account linked to a Facebook Page you own.
+   One connection covers both Facebook and Instagram (Channels → Connect each).
+
+3. **TikTok** — [developers.tiktok.com](https://developers.tiktok.com) → Create client →
+   add callback `http://localhost:3000/api/auth/callback/tiktok` → request the
+   **Direct Post** capability (scopes `user.info.basic`, `video.publish`) →
+   copy Client Key + Secret into `.env` (`TIKTOK_CLIENT_KEY` / `TIKTOK_CLIENT_SECRET`).
+
+4. Restart `npm start`, then in the app: **Channels → Connect (OAuth)** for each platform.
+   The browser opens the platform's consent screen; after you approve, the app returns
+   with a green **LIVE** chip and your handle.
+
+> Note: on the free X tier the app starts in sandbox mode; publishing goes live as soon
+> as you connect. If a platform's `.env` keys are missing, the Connect button shows a
+> clear error telling you which variable to set.
+
+### How the OAuth flow works
+
+```
+Browser ──GET /api/accounts/:platform/connect──▶ Express (302 → platform consent screen)
+Platform ──user approves──▶ GET /api/auth/callback/:platform?code&state
+Express: verify state (in-memory PKCE store, 10-min TTL)
+       → exchange code for tokens
+       → discover Page / IG Business account (Meta) or username (X/TikTok)
+       → upsert SocialAccount { mode: 'live', credentials: {...} }
+       → 302 back to /channels?connected=...&handle=...
+```
+
+Tokens are stored on the account document (`credentials`, per-platform shape).
+X access tokens auto-refresh at publish time when `expiresAt` has passed.
+
+### Verification
+
+The whole live path is testable **without real platform apps** by pointing the base-URL
+env vars at a mock server — exactly what CI-style verification does:
+
+```bash
+node scripts/test-live-integration.js
+# 38 assertions: OAuth round-trips (X PKCE, Meta, TikTok), credential storage,
+# LIVE dispatch request shapes (tweets+media, IG container, TikTok PULL_FROM_URL),
+# sandbox dispatch making ZERO external calls, state-replay rejection.
+```

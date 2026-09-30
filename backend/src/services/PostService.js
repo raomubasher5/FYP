@@ -112,8 +112,12 @@ class PostService {
         continue;
       }
 
-      const publisher = publishingManager.getPublisher(platform);
-      const res = await publisher.publish(post.platforms[platform] || {}, account);
+      const publisher = publishingManager.getPublisher(platform, account);
+      // imageUrl travels with the content so live publishers can attach media
+      const res = await publisher.publish(
+        { ...(post.platforms[platform] || {}), imageUrl: post.imageUrl || null },
+        account
+      );
       executionResults.push(res);
     }
 
@@ -127,8 +131,11 @@ class PostService {
 
     const published = executionResults.filter((r) => r.status === 'success').length;
     const skipped = executionResults.length - published;
+    const liveCount = executionResults.filter((r) => r.simulated === false).length;
     await logRepository.create(
-      `[Publisher] Sandbox dispatch recorded for "${post.topic}" — ${published} channel receipt(s)${skipped ? `, ${skipped} skipped (no connected channel)` : ''}. No live platform calls made.`
+      liveCount > 0
+        ? `[Publisher] LIVE dispatch for "${post.topic}" — ${liveCount} real platform post(s)${published - liveCount ? `, ${published - liveCount} sandbox receipt(s)` : ''}${skipped ? `, ${skipped} skipped` : ''}`
+        : `[Publisher] Sandbox dispatch recorded for "${post.topic}" — ${published} simulated receipt(s)${skipped ? `, ${skipped} skipped (no connected channel)` : ''}. No live platform calls made.`
     );
     return { post: updated, executionResults };
   }
