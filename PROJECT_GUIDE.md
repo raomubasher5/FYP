@@ -51,10 +51,13 @@ automatrix/
 │       │   └── Comment.js           # real audience comments imported for sentiment
 │       ├── db/
 │       │   └── mongo.js       # Mongoose connection lifecycle (fail-fast + graceful close)
-│       ├── controllers/       # HTTP Request / Response handling (thin)
-│       │   ├── PostController.js
-│       │   └── index.js       # ProfileController, AccountController (incl. create/delete),
-│       │                      #   AnalyticsController (incl. comment import), SystemController
+│       ├── controllers/       # HTTP Request / Response handling (thin, one class per resource)
+│       │   ├── PostController.js      # post lifecycle endpoints
+│       │   ├── ProfileController.js   # business profile + AI provider configuration
+│       │   ├── AccountController.js   # channel registration, connection toggle, sandbox/live mode
+│       │   ├── AnalyticsController.js # metrics overview + real audience comment import
+│       │   ├── SystemController.js    # audit logs + workspace reset
+│       │   └── index.js               # aggregator (exports all controllers)
 │       ├── services/          # Core Business Logic & Orchestration
 │       │   ├── ai/            # AI Engine — Factory & Strategy pattern
 │       │   │   ├── BaseAIProvider.js  # Abstract interface contract
@@ -73,7 +76,13 @@ automatrix/
 │       ├── repositories/      # DAO / Data Access Layer (Mongoose)
 │       │   ├── PostRepository.js
 │       │   └── index.js       # Account/Profile/Log/Comment repositories
-│       ├── routes/            # Modular REST API routing
+│       ├── routes/            # One dedicated router file per resource
+│       │   ├── postRoutes.js          # /api/posts (+ /generate, /:id/approve, /:id/publish-now)
+│       │   ├── profileRoutes.js       # /api/profile (+ /ai-config)
+│       │   ├── accountRoutes.js       # /api/accounts (+ /:id/toggle, /:id/mode)
+│       │   ├── analyticsRoutes.js     # /api/analytics (+ /comments)
+│       │   ├── systemRoutes.js        # /api/system (+ /logs, /reset)
+│       │   └── index.js               # aggregator (mounts all routers under /api)
 │       ├── middlewares/       # Centralized error handler, request logger
 │       ├── utils/             # ApiResponse envelope, AppError, asyncHandler
 │       ├── app.js             # Express application setup
