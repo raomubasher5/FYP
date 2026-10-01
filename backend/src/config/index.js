@@ -29,6 +29,31 @@ const config = {
     //  - Atlas:  mongodb+srv://<user>:<pass>@cluster.x.mongodb.net/automatrix
     uri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/automatrix'
   },
+  // Public URL of the Express server (where OAuth redirects must land)
+  publicUrl: (process.env.PUBLIC_URL || 'http://localhost:3000').replace(/\/+$/, ''),
+  social: {
+    // X (Twitter) — create a free app at developer.twitter.com
+    x: {
+      clientId: process.env.X_CLIENT_ID || '',
+      clientSecret: process.env.X_CLIENT_SECRET || '',
+      authBase: process.env.X_AUTH_BASE || 'https://x.com',
+      apiBase: process.env.X_API_BASE || 'https://api.twitter.com',
+      uploadBase: process.env.X_UPLOAD_BASE || 'https://upload.twitter.com'
+    },
+    // Meta (Facebook + Instagram) — create an app at developers.facebook.com
+    meta: {
+      appId: process.env.META_APP_ID || '',
+      appSecret: process.env.META_APP_SECRET || '',
+      graphBase: process.env.META_GRAPH_BASE || 'https://graph.facebook.com',
+      apiVersion: process.env.META_API_VERSION || 'v19.0'
+    },
+    // TikTok — create a client at developers.tiktok.com
+    tiktok: {
+      clientKey: process.env.TIKTOK_CLIENT_KEY || '',
+      clientSecret: process.env.TIKTOK_CLIENT_SECRET || '',
+      apiBase: process.env.TIKTOK_API_BASE || 'https://open.tiktokapis.com'
+    }
+  },
   paths: {
     clientDist: path.join(__dirname, '../../../client/dist')
   }

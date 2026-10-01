@@ -1,79 +1,43 @@
 'use strict';
 
-const BasePublisher = class {
-  constructor(platformName) {
-    this.platform = platformName;
-  }
-
-  /**
-   * SANDBOX SIMULATION — records a local dispatch receipt.
-   * No real social platform API call is made, no real post URL is
-   * fabricated, and no engagement numbers are invented. `url` is null
-   * until a live API integration exists for this platform.
-   */
-  async publish(content, account) {
-    // Simulated dispatch latency
-    await new Promise((r) => setTimeout(r, 150));
-
-    return {
-      platform: this.platform,
-      account: account.handle,
-      status: 'success',
-      simulated: true,
-      platformPostId: null,
-      publishedAt: new Date().toISOString(),
-      mode: account.mode || 'sandbox',
-      url: null
-    };
-  }
-};
-
-class TwitterPublisher extends BasePublisher {
-  constructor() {
-    super('twitter');
-  }
-}
-
-class InstagramPublisher extends BasePublisher {
-  constructor() {
-    super('instagram');
-  }
-}
-
-class FacebookPublisher extends BasePublisher {
-  constructor() {
-    super('facebook');
-  }
-}
-
-class TikTokPublisher extends BasePublisher {
-  constructor() {
-    super('tiktok');
-  }
-}
-
-class LinkedInPublisher extends BasePublisher {
-  constructor() {
-    super('linkedin');
-  }
-}
+const SandboxPublisher = require('./sandbox');
+const xPublisher = require('./x');
+const metaPublishers = require('./meta');
+const tiktokPublisher = require('./tiktok');
 
 /**
- * PublishingManager — Strategy Pattern: one publisher per platform.
+ * PublishingManager — Strategy Pattern with REAL platform publishers and a
+ * clearly-labeled sandbox fallback.
+ *
+ * Dispatch rule:
+ *   account.mode === 'live' AND account.credentials present -> real publisher
+ *   anything else                                           -> sandbox simulation
  */
 class PublishingManager {
   constructor() {
-    this.publishers = {
-      twitter: new TwitterPublisher(),
-      instagram: new InstagramPublisher(),
-      facebook: new FacebookPublisher(),
-      tiktok: new TikTokPublisher(),
-      linkedin: new LinkedInPublisher()
+    this.real = {
+      twitter: xPublisher,
+      facebook: metaPublishers.facebook,
+      instagram: metaPublishers.instagram,
+      tiktok: tiktokPublisher
+    };
+    this.oauth = {
+      twitter: xPublisher,
+      facebook: metaPublishers.facebook,
+      instagram: metaPublishers.instagram,
+      tiktok: tiktokPublisher
     };
   }
 
-  getPublisher(platform) {
-    return this.publishers[platform] || new BasePublisher(platform);
+  isLiveAccount(account) {
+    return Boolean(account && account.mode === 'live' && account.credentials);
+  }
+
+  getPublisher(platform, account) {
+    if (this.isLiveAccount(account) && this.real[platform]) {
+      return this.real[platform];
+    }
+    return new SandboxPublisher(platform);
   }
 }
 

@@ -39,7 +39,11 @@ class PostController {
 
   publishNow = asyncHandler(async (req, res) => {
     const result = await postService.publishPost(req.params.id);
-    return ApiResponse.success(res, result.post, 'Post dispatched successfully (sandbox simulation — no live platform calls)');
+    const live = (result.executionResults || []).filter((r) => r.simulated === false).length;
+    const message = live > 0
+      ? `Post published LIVE to ${live} real channel(s)`
+      : 'Post dispatched (sandbox simulation — connect a live channel in Channels for real publishing)';
+    return ApiResponse.success(res, result.post, message);
   });
 
   generate = asyncHandler(async (req, res) => {

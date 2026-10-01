@@ -70,6 +70,13 @@ class AccountController {
     const account = await accountRepository.findById(req.params.id);
     if (!account) throw new AppError('Social account not found', 404);
 
+    if (mode === 'live' && !account.credentials) {
+      throw new AppError(
+        'This channel has no live credentials — use the "Connect" button (OAuth) in Channels first',
+        400
+      );
+    }
+
     const updated = await accountRepository.update(account.id, { mode });
     return ApiResponse.success(res, updated);
   });
