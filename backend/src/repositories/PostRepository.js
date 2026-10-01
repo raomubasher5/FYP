@@ -1,38 +1,46 @@
-const db = require('./BaseRepository');
+'use strict';
 
+const Post = require('../models/Post');
+
+/**
+ * PostRepository — Data Access Layer for posts (MongoDB / Mongoose).
+ * Pure persistence: no business logic here.
+ */
 class PostRepository {
-  findAll(filterFn = null) {
-    if (typeof filterFn === 'function') {
-      return db.data.posts.filter(filterFn);
+  /**
+   * Return posts, optionally filtered. Accepts a Mongoose filter object
+   * (e.g. { status: 'draft' }) for efficiency, or a JS predicate for
+   * compatibility with existing call sites.
+   */
+  async findAll(filterFn = null) {
+    if (filterFn && typeof filterFn === 'object' && !Array.isArray(filterFn)) {
+      return Post.find(filterFn).sort({ createdAt: -1 }).lean();
     }
-    return db.data.posts;
+
+    const posts = await Post.find({}).sort({ createdAt: -1 }).lean();
+    if (typeof filterFn === 'function') {
+      return posts.filter(filterFn);
+    }
+    return posts;
   }
 
-  findById(id) {
-    return db.data.posts.find(p => p.id === id) || null;
+  async findById(id) {
+    return Post.findOne({ id }).lean();
   }
 
-  create(postData) {
-    db.data.posts.unshift(postData);
-    db.persist();
-    return postData;
+  async create(postData) {
+    const doc = await Post.create(postData);
+    return doc.toJSON();
   }
 
-  update(id, updateData) {
-    const index = db.data.posts.findIndex(p => p.id === id);
-    if (index === -1) return null;
-
-    db.data.posts[index] = { ...db.data.posts[index], ...updateData };
-    db.persist();
-    return db.data.posts[index];
+  async update(id, updateData) {
+    const doc = await Post.findOneAndUpdate({ id }, { $set: updateData }, { new: true });
+    return doc ? doc.toJSON() : null;
   }
 
-  delete(id) {
-    const initialLen = db.data.posts.length;
-    db.data.posts = db.data.posts.filter(p => p.id !== id);
-    const deleted = db.data.posts.length < initialLen;
-    if (deleted) db.persist();
-    return deleted;
+  async delete(id) {
+    const res = await Post.deleteOne({ id });
+    return res.deletedCount > 0;
   }
 }
 

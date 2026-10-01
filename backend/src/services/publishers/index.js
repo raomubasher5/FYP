@@ -1,61 +1,43 @@
-class BasePublisher {
-  constructor(platformName) {
-    this.platform = platformName;
-  }
+'use strict';
 
-  async publish(content, account) {
-    // Standard mock latency & receipt generation
-    await new Promise((r) => setTimeout(r, 150));
-    const postId = `${this.platform.toUpperCase()}_${Date.now()}_${Math.floor(Math.random() * 900 + 100)}`;
+const SandboxPublisher = require('./sandbox');
+const xPublisher = require('./x');
+const metaPublishers = require('./meta');
+const tiktokPublisher = require('./tiktok');
 
-    return {
-      platform: this.platform,
-      account: account.handle,
-      status: 'success',
-      platformPostId: postId,
-      publishedAt: new Date().toISOString(),
-      mode: account.mode || 'sandbox',
-      url: `https://${this.platform}.com/${account.handle.replace('@', '')}/status/${postId}`
-    };
-  }
-}
-
-class TwitterPublisher extends BasePublisher {
-  constructor() {
-    super('twitter');
-  }
-}
-
-class InstagramPublisher extends BasePublisher {
-  constructor() {
-    super('instagram');
-  }
-}
-
-class FacebookPublisher extends BasePublisher {
-  constructor() {
-    super('facebook');
-  }
-}
-
-class TikTokPublisher extends BasePublisher {
-  constructor() {
-    super('tiktok');
-  }
-}
-
+/**
+ * PublishingManager — Strategy Pattern with REAL platform publishers and a
+ * clearly-labeled sandbox fallback.
+ *
+ * Dispatch rule:
+ *   account.mode === 'live' AND account.credentials present -> real publisher
+ *   anything else                                           -> sandbox simulation
+ */
 class PublishingManager {
   constructor() {
-    this.publishers = {
-      twitter: new TwitterPublisher(),
-      instagram: new InstagramPublisher(),
-      facebook: new FacebookPublisher(),
-      tiktok: new TikTokPublisher()
+    this.real = {
+      twitter: xPublisher,
+      facebook: metaPublishers.facebook,
+      instagram: metaPublishers.instagram,
+      tiktok: tiktokPublisher
+    };
+    this.oauth = {
+      twitter: xPublisher,
+      facebook: metaPublishers.facebook,
+      instagram: metaPublishers.instagram,
+      tiktok: tiktokPublisher
     };
   }
 
-  getPublisher(platform) {
-    return this.publishers[platform] || new BasePublisher(platform);
+  isLiveAccount(account) {
+    return Boolean(account && account.mode === 'live' && account.credentials);
+  }
+
+  getPublisher(platform, account) {
+    if (this.isLiveAccount(account) && this.real[platform]) {
+      return this.real[platform];
+    }
+    return new SandboxPublisher(platform);
   }
 }
 

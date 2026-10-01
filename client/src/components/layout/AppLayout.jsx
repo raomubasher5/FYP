@@ -1,11 +1,13 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import { Outlet, useLocation } from 'react-router-dom';
+
 import Header from './Header';
+import React from 'react';
+import Sidebar from './Sidebar';
 import { Toast } from '../common';
 import { useApp } from '../../context/AppContext';
 
 export default function AppLayout() {
+  const location = useLocation();
   const { loading, notification, clearNotification } = useApp();
 
   if (loading) {
@@ -32,10 +34,13 @@ export default function AppLayout() {
         <Header />
 
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-          <Outlet />
+          {/* Keyed by route so every page entrance re-plays the fade-up animation */}
+          <div key={location.pathname} className="animate-fade-up">
+            <Outlet />
+          </div>
         </main>
 
-        <footer className="border-t border-slate-200/80 dark:border-slate-800/80 py-4 px-8 text-xs text-slate-500 dark:text-slate-400 bg-white/70 dark:bg-[#050914]/80 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-2 mt-auto">
+        <footer className="border-t border-slate-200/80 dark:border-slate-800/80 py-4 px-8 text-xs text-slate-500 dark:text-slate-400 bg-white/70 dark:bg-[#0a0512]/80 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-2 mt-auto">
           <span>Automatrix — Unified AI Agent-Powered Social Media Management Platform</span>
           <span className="font-mono text-slate-400 dark:text-slate-500">Multi-Page Production Architecture · Dual Theme Engine</span>
         </footer>

@@ -79,6 +79,25 @@ export function useAppEngine() {
     await loadData(true);
   };
 
+  const addAccount = async (data) => {
+    const created = await accountApi.create(data);
+    notify(`Channel "${data.name}" connected.`, 'success');
+    await loadData(true);
+    return created;
+  };
+
+  const removeAccount = async (id) => {
+    await accountApi.delete(id);
+    notify('Channel removed.', 'info');
+    await loadData(true);
+  };
+
+  const addComment = async (data) => {
+    await analyticsApi.addComment(data);
+    notify('Real comment imported for sentiment analysis.', 'success');
+    await loadData(true);
+  };
+
   const toggleAccount = async (id) => {
     const res = await accountApi.toggle(id);
     await loadData(true);
@@ -98,10 +117,10 @@ export function useAppEngine() {
     return res;
   };
 
-  const resetDemo = async () => {
-    if (!window.confirm('Reset application state to initial demo data?')) return;
+  const resetWorkspace = async () => {
+    if (!window.confirm('Reset workspace? This clears all posts, imported comments and logs. Your profile and channels are kept.')) return;
     await analyticsApi.resetDemo();
-    notify('Database successfully reset to FYP initial state.', 'success');
+    notify('Workspace reset — posts, comments and logs cleared.', 'success');
     await loadData(true);
   };
 
@@ -121,10 +140,14 @@ export function useAppEngine() {
       approvePost,
       publishNow,
       deletePost,
+      addAccount,
+      removeAccount,
+      addComment,
       toggleAccount,
       setAccountMode,
       updateProfile,
-      resetDemo
+      resetWorkspace,
+      resetDemo: resetWorkspace
     }
   };
 }

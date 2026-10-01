@@ -63,7 +63,7 @@ export default function DashboardPage() {
         <div className="flex items-center space-x-2 shrink-0">
           <Link
             to="/onboarding"
-            className="px-3.5 py-1.5 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-semibold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 cursor-pointer active:scale-[0.99]"
+            className="px-3.5 py-1.5 blotato-cta font-semibold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5 cursor-pointer active:scale-[0.99]"
           >
             <span>Open Quick-Start Tour</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -72,7 +72,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Editorial Hero Welcome Banner */}
-      <div className="glass-panel rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="glass-panel glow-hero rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 animate-fade-up stagger-1">
         <div>
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-xs font-mono font-bold mb-3">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -82,14 +82,15 @@ export default function DashboardPage() {
             {profile?.businessName || 'Business Workspace'}
           </h1>
           <p className="text-stone-500 dark:text-stone-400 text-xs md:text-sm mt-1 max-w-2xl leading-relaxed">
-            Managing unified social media operations across X, Instagram, Facebook & TikTok with zero daily manual friction.
+            Managing unified social media operations across X, Instagram, Facebook & TikTok with{' '}
+            <span className="gradient-text font-semibold">zero daily manual friction</span>.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => navigate('/composer')}
-            className="px-5 py-2.5 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-semibold text-xs rounded-xl shadow-sm hover:shadow transition active:scale-[0.99] flex items-center space-x-2 cursor-pointer"
+            className="px-5 py-2.5 blotato-cta font-semibold text-xs rounded-full transition active:scale-[0.99] flex items-center space-x-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             <span>Compose with AI</span>
@@ -105,7 +106,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up stagger-2">
         {/* Card 1: Published */}
         <div className="glass-panel glass-panel-hover rounded-2xl p-5">
           <div className="flex items-center justify-between">
@@ -114,13 +115,13 @@ export default function DashboardPage() {
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 mt-3 tracking-tight">
+          <div className="text-3xl font-extrabold mt-3 tracking-tight gradient-text">
             {publishedPosts.length}
           </div>
           <div className="flex items-center justify-between mt-3 text-xs">
             <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center space-x-1 font-mono">
               <TrendingUp className="w-3.5 h-3.5 mr-0.5" />
-              <span>100% Delivery</span>
+              <span>Scheduler Active</span>
             </span>
             <span className="text-stone-500 text-[11px] font-mono">Live on {accounts.filter(a => a.status === 'connected').length} channels</span>
           </div>
@@ -134,7 +135,7 @@ export default function DashboardPage() {
               <CalendarClock className="w-4 h-4 text-stone-600 dark:text-stone-400" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 mt-3 tracking-tight">
+          <div className="text-3xl font-extrabold mt-3 tracking-tight gradient-text">
             {scheduledPosts.length}
           </div>
           <div className="flex items-center justify-between mt-3 text-xs">
@@ -153,14 +154,14 @@ export default function DashboardPage() {
               <Users className="w-4 h-4 text-stone-600 dark:text-stone-400" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 mt-3 tracking-tight">
-            {(analytics?.overview?.totalReach || 4280).toLocaleString()}
+          <div className="text-3xl font-extrabold mt-3 tracking-tight gradient-text">
+            {(analytics?.overview?.totalReach || 0).toLocaleString()}
           </div>
           <div className="flex items-center justify-between mt-3 text-xs">
             <span className="text-stone-600 dark:text-stone-400 font-medium font-mono">
-              +{analytics?.overview?.totalLikes || 310} engagements
+              {analytics?.overview?.totalEngagement ?? 0} total interactions
             </span>
-            <span className="text-stone-500 text-[11px] font-mono">+18% this week</span>
+            <span className="text-stone-500 text-[11px] font-mono">All time</span>
           </div>
         </div>
 
@@ -172,24 +173,27 @@ export default function DashboardPage() {
               <Smile className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 mt-3 tracking-tight">
-            {analytics?.sentiment?.positive || 78}%
+          <div className="text-3xl font-extrabold mt-3 tracking-tight gradient-text">
+            {analytics?.sentiment ? `${analytics.sentiment.positive}%` : '—'}
           </div>
           <div className="flex items-center justify-between mt-3 text-xs">
-            <span className="text-emerald-700 dark:text-emerald-400 font-semibold font-mono">Positive Affinity</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-semibold font-mono">
+              {analytics?.sentiment ? 'Positive Affinity' : 'No comments imported yet'}
+            </span>
             <span className="text-stone-500 text-[11px] font-mono">
-              {analytics?.sentiment?.negative || 4}% Negative
+              {analytics?.sentiment ? `${analytics.sentiment.negative}% Negative` : 'Import in Analytics'}
             </span>
           </div>
         </div>
       </div>
+
 
       {/* Main Grid: Scheduled Dispatch & Activity Console */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
           {/* Next Scheduled Post Box */}
-          <div className="glass-panel rounded-2xl p-6 shadow-sm">
+          <div className="glass-panel rounded-2xl p-6 shadow-sm animate-fade-up stagger-3">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-stone-700 dark:text-stone-300" />
@@ -229,10 +233,10 @@ export default function DashboardPage() {
                   <button
                     onClick={() => actions.publishNow(nextScheduled.id)}
                     className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-sm transition cursor-pointer"
-                    title="Simulate immediate publishing for FYP demonstration"
+                    title="Publish immediately in sandbox simulation mode — no live platform calls"
                   >
                     <Play className="w-3.5 h-3.5" />
-                    <span>Publish Now (Demo)</span>
+                    <span>Publish Now (Sandbox)</span>
                   </button>
                   <button
                     onClick={() => navigate('/queue')}
@@ -249,7 +253,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-stone-500 mt-1">Generate a new multi-platform post using the AI Composer.</p>
                 <button
                   onClick={() => navigate('/composer')}
-                  className="mt-3 px-4 py-2 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 text-xs rounded-xl font-bold transition shadow-sm cursor-pointer"
+                  className="mt-3 px-4 py-2 blotato-cta text-xs rounded-xl font-bold transition shadow-sm cursor-pointer"
                 >
                   Create AI Campaign
                 </button>
@@ -257,7 +261,20 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Interactive Reach Growth Chart (SVG Line Graph) */}
+      {/* Chart data: computed from REAL published post metrics (last 7 days) */}
+      {(() => {
+        const trend = analytics?.trend || [];
+        const hasData = trend.some((d) => d.reach > 0 || d.engagements > 0);
+        const W = 600;
+        const H = 150;
+        const max = Math.max(1, ...trend.map((d) => Math.max(d.reach, d.engagements)));
+        const x = (i) => (trend.length > 1 ? (i / (trend.length - 1)) * W : W / 2);
+        const y = (v) => H - 10 - (v / max) * (H - 30);
+        const linePath = (key) =>
+          trend.map((d, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(d[key]).toFixed(1)}`).join(' ');
+        const areaPath = trend.length ? `${linePath('reach')} L ${W} ${H} L 0 ${H} Z` : '';
+        return (
+          /* Interactive Reach Growth Chart — real data only */
           <div className="glass-panel rounded-2xl p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -265,78 +282,78 @@ export default function DashboardPage() {
                   <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Audience Reach & Growth Trends</span>
                 </h3>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">Aggregated weekly impressions across Instagram, X, Facebook & TikTok</p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                  {hasData
+                    ? 'Last 7 days, computed from your published posts\u2019 recorded metrics'
+                    : 'Last 7 days — publish posts with recorded metrics to see real growth data'}
+                </p>
               </div>
 
               <div className="flex items-center space-x-3 text-xs font-mono">
                 <span className="flex items-center space-x-1.5 text-stone-800 dark:text-stone-200">
-                  <span className="w-2 h-2 rounded-full bg-stone-900 dark:bg-stone-100"></span>
-                  <span>Impressions</span>
+                  <span className="w-2 h-2 rounded-full bg-violet-500 dark:bg-violet-400"></span>
+                  <span>Reach</span>
                 </span>
                 <span className="flex items-center space-x-1.5 text-emerald-600 dark:text-emerald-400">
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Engagements</span>
+                  <span>Interactions</span>
                 </span>
               </div>
             </div>
 
-            {/* Custom Interactive SVG Graph */}
-            <div className="h-44 w-full pt-2">
-              <svg viewBox="0 0 600 160" className="w-full h-full overflow-visible">
-                <defs>
-                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1c1917" stopOpacity="0.12" />
-                    <stop offset="100%" stopColor="#1c1917" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
+            {hasData ? (
+              <div className="h-44 w-full pt-2">
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full overflow-visible">
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#1c1917" stopOpacity="0.12" />
+                      <stop offset="100%" stopColor="#1c1917" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
 
-                {/* Horizontal Guide lines */}
-                <line x1="0" y1="30" x2="600" y2="30" stroke="#e7e5e4" strokeDasharray="3 3" />
-                <line x1="0" y1="75" x2="600" y2="75" stroke="#e7e5e4" strokeDasharray="3 3" />
-                <line x1="0" y1="120" x2="600" y2="120" stroke="#e7e5e4" strokeDasharray="3 3" />
+                  {/* Horizontal Guide lines */}
+                  <line x1="0" y1={H * 0.2} x2={W} y2={H * 0.2} stroke="#e7e5e4" strokeDasharray="3 3" />
+                  <line x1="0" y1={H * 0.5} x2={W} y2={H * 0.5} stroke="#e7e5e4" strokeDasharray="3 3" />
+                  <line x1="0" y1={H * 0.8} x2={W} y2={H * 0.8} stroke="#e7e5e4" strokeDasharray="3 3" />
 
-                {/* Area under curve */}
-                <path
-                  d="M 0 130 Q 100 110, 150 90 T 300 65 T 450 35 T 600 20 L 600 150 L 0 150 Z"
-                  fill="url(#chartGradient)"
-                />
+                  {/* Area under reach curve */}
+                  {areaPath && <path d={areaPath} fill="url(#chartGradient)" />}
 
-                {/* Primary Trend Line */}
-                <path
-                  d="M 0 130 Q 100 110, 150 90 T 300 65 T 450 35 T 600 20"
-                  fill="none"
-                  stroke="#1c1917"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
+                  {/* Reach line */}
+                  <path d={linePath('reach')} fill="none" stroke="#1c1917" strokeWidth="2.5" strokeLinecap="round" className="dark:stroke-stone-100" />
 
-                {/* Secondary Engagement Line */}
-                <path
-                  d="M 0 145 Q 100 130, 150 115 T 300 95 T 450 70 T 600 55"
-                  fill="none"
-                  stroke="#059669"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
+                  {/* Interactions line */}
+                  <path d={linePath('engagements')} fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" />
 
-                {/* Points */}
-                <circle cx="150" cy="90" r="3.5" fill="#1c1917" stroke="#fff" strokeWidth="2" />
-                <circle cx="300" cy="65" r="3.5" fill="#1c1917" stroke="#fff" strokeWidth="2" />
-                <circle cx="450" cy="35" r="3.5" fill="#1c1917" stroke="#fff" strokeWidth="2" />
-                <circle cx="600" cy="20" r="4" fill="#1c1917" stroke="#fff" strokeWidth="2" />
-              </svg>
-            </div>
+                  {/* Data points */}
+                  {trend.map((d, i) => (
+                    <g key={d.date}>
+                      <circle cx={x(i)} cy={y(d.reach)} r={d.reach > 0 ? 3.5 : 2.5} fill="#1c1917" stroke="#fff" strokeWidth="1.5" className="dark:fill-stone-100" />
+                      <title>{`${d.label}: reach ${d.reach}, interactions ${d.engagements}`}</title>
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            ) : (
+              <div className="h-44 flex flex-col items-center justify-center text-center bg-stone-50 dark:bg-stone-900/40 rounded-2xl border border-dashed border-stone-200 dark:border-stone-800">
+                <TrendingUp className="w-8 h-8 text-stone-400 dark:text-stone-500 mb-2" />
+                <p className="text-sm font-semibold text-stone-800 dark:text-stone-300">No reach data yet</p>
+                <p className="text-xs text-stone-500 mt-1 max-w-xs">
+                  This chart is computed from real engagement recorded on your published posts. Nothing is plotted until real data exists.
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center justify-between text-[11px] text-stone-500 px-2 font-mono border-t border-stone-200/80 dark:border-stone-800 pt-2">
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-              <span className="text-stone-900 dark:text-stone-100 font-bold">Today</span>
+              {trend.map((d, i) => (
+                <span key={d.date} className={i === trend.length - 1 ? 'text-stone-900 dark:text-stone-100 font-bold' : ''}>
+                  {d.label}
+                </span>
+              ))}
             </div>
           </div>
+        );
+      })()}
         </div>
 
         {/* Right Column (4 cols): Live Activity Stream & Channel Ticker */}

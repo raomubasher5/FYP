@@ -92,7 +92,7 @@ export default function OnboardingPage() {
             <div className="w-full h-2.5 bg-stone-200 dark:bg-stone-950 rounded-full overflow-hidden border border-stone-300 dark:border-stone-800 shadow-inner">
               <div 
                 style={{ width: `${progressPct}%` }} 
-                className="bg-stone-900 dark:bg-stone-100 h-full transition-all duration-500"
+                className="bg-gradient-to-r from-pink-500 to-violet-600 h-full transition-all duration-500"
               />
             </div>
             <span className="text-[11px] text-stone-500 dark:text-stone-400 block text-center font-medium font-mono">
@@ -154,7 +154,7 @@ export default function OnboardingPage() {
                   className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 cursor-pointer ${
                     step.completed
                       ? 'bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-300 border border-stone-200 dark:border-stone-700'
-                      : 'bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 shadow-xs active:scale-[0.99]'
+                      : 'blotato-cta shadow-xs active:scale-[0.99]'
                   }`}
                 >
                   <span>{step.actionLabel}</span>
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
         <div className="pt-2 flex justify-center">
           <button
             onClick={() => navigate('/composer')}
-            className="px-6 py-3 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-bold text-xs rounded-2xl shadow-sm hover:shadow transition transform active:scale-[0.99] flex items-center space-x-2 cursor-pointer"
+            className="px-6 py-3 blotato-cta font-bold text-xs rounded-2xl shadow-sm hover:shadow transition transform active:scale-[0.99] flex items-center space-x-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             <span>Launch AI Composer Now</span>

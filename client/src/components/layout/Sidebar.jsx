@@ -34,17 +34,17 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white/95 dark:bg-[#0c0a09]/95 border-r border-stone-200/90 dark:border-stone-800/80 flex flex-col justify-between shrink-0 select-none backdrop-blur-xl transition-colors duration-200">
+    <aside className="w-64 bg-white/95 dark:bg-[#0a0512]/95 border-r border-stone-200/90 dark:border-stone-800/80 flex flex-col justify-between shrink-0 select-none backdrop-blur-xl transition-colors duration-200">
       {/* Top Brand Header */}
       <div>
         <div className="p-5 border-b border-stone-200/80 dark:border-stone-800/80">
           <NavLink to="/dashboard" className="flex items-center space-x-3 group">
-            <div className="w-9 h-9 rounded-xl bg-stone-900 dark:bg-stone-100 flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
-              <Bot className="w-5 h-5 text-white dark:text-stone-900" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-violet-600 flex items-center justify-center shrink-0 shadow-sm shadow-pink-500/40 transition-transform group-hover:scale-105">
+              <Bot className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="flex items-center space-x-1.5">
-                <span className="font-extrabold text-stone-900 dark:text-stone-100 text-base tracking-tight">Automatrix</span>
+                <span className="font-extrabold text-base tracking-tight gradient-text">Automatrix</span>
                 <span className="px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 text-[9px] font-mono font-bold rounded">AI</span>
               </div>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate max-w-[135px] font-medium">
@@ -82,7 +82,7 @@ export default function Sidebar() {
                 to={item.to}
                 className={({ isActive }) => `w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group ${
                   isActive
-                    ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-bold shadow-xs'
+                    ? 'bg-pink-500 text-white font-bold shadow-xs'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100/80 dark:hover:bg-stone-900/60'
                 }`}
               >
@@ -127,7 +127,7 @@ export default function Sidebar() {
               to="/onboarding"
               className={({ isActive }) => `w-full flex items-center space-x-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition ${
                 isActive
-                  ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 font-bold shadow-xs'
+                  ? 'bg-gradient-to-tr from-pink-500 to-violet-600 text-white border-transparent font-bold shadow-xs'
                   : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200/80 dark:border-stone-800/80 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
               }`}
             >
@@ -162,12 +162,12 @@ export default function Sidebar() {
           <ThemeToggle variant="segmented" className="w-full justify-between" />
 
           <button
-            onClick={actions.resetDemo}
+            onClick={actions.resetWorkspace}
             className="w-full flex items-center justify-center space-x-1.5 py-1.5 px-3 rounded-xl text-[11px] font-medium text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100/80 dark:hover:bg-stone-800/60 transition border border-transparent hover:border-stone-200 dark:hover:border-stone-800 cursor-pointer"
-            title="Restore factory FYP demonstration data"
+            title="Clear all posts, imported comments and logs (profile and channels are kept)"
           >
             <RefreshCw className="w-3 h-3 text-stone-400" />
-            <span>Restore Demo State</span>
+            <span>Reset Workspace</span>
           </button>
         </div>
       </div>

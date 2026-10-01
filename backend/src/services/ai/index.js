@@ -1,11 +1,33 @@
+'use strict';
+
 const config = require('../../config');
 const GeminiProvider = require('./GeminiProvider');
 const GroqProvider = require('./GroqProvider');
+const OllamaProvider = require('./OllamaProvider');
+const MockAIProvider = require('./MockAIProvider');
 const ContextualAIProvider = require('./ContextualAIProvider');
 
+/**
+ * AIFactory — creates the configured AI provider (Factory Pattern).
+ *  - 'gemini'      -> real Google Gemini LLM (needs GEMINI_API_KEY)
+ *  - 'groq'        -> real Groq Llama (needs GROQ_API_KEY)
+ *  - 'ollama'      -> real local LLM via Ollama on the user's PC (no key, no cloud)
+ *  - 'mock'        -> fully offline template engine, no network, no images
+ *  - 'contextual'  -> offline contextual template engine + live AI images
+ *
+ * Explicit selection always wins; API keys in .env only act as fallback hints.
+ */
 class AIFactory {
   static getProvider(providerType = config.ai.provider) {
     const selected = (providerType || '').toLowerCase();
+
+    if (selected === 'ollama') {
+      return new OllamaProvider(config.ai.ollamaBaseUrl, config.ai.ollamaModel || 'llama3.1');
+    }
+
+    if (selected === 'mock') {
+      return new MockAIProvider();
+    }
 
     if (selected === 'gemini' || config.ai.geminiApiKey) {
       return new GeminiProvider(config.ai.geminiApiKey, config.ai.defaultModel || 'gemini-1.5-flash');
@@ -15,7 +37,6 @@ class AIFactory {
       return new GroqProvider(config.ai.groqApiKey, config.ai.defaultModel || 'llama-3.3-70b-versatile');
     }
 
-    // Default real dynamic generation engine with real live AI image generator
     return new ContextualAIProvider();
   }
 }
@@ -25,15 +46,24 @@ class AIService {
     this.provider = AIFactory.getProvider();
   }
 
-  reconfigure(providerType, apiKey, model) {
-    if (providerType === 'gemini') {
+  reconfigure(providerType, apiKey, model, baseUrl) {
+    const selected = (providerType || '').toLowerCase();
+    if (selected === 'gemini') {
       this.provider = new GeminiProvider(apiKey, model || 'gemini-1.5-flash');
-    } else if (providerType === 'groq') {
+    } else if (selected === 'groq') {
       this.provider = new GroqProvider(apiKey, model || 'llama-3.3-70b-versatile');
+    } else if (selected === 'ollama') {
+      this.provider = new OllamaProvider(baseUrl, model);
+    } else if (selected === 'mock') {
+      this.provider = new MockAIProvider();
     } else {
       this.provider = new ContextualAIProvider();
     }
     console.log(`[AIService] Reconfigured active AI provider to: ${this.provider.name}`);
+  }
+
+  get activeProviderName() {
+    return this.provider.name;
   }
 
   async generateMultiPlatformPost(context) {

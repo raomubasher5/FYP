@@ -13,18 +13,22 @@ export const postApi = {
 
 export const accountApi = {
   getAll: () => apiClient.get('/accounts'),
+  create: (data) => apiClient.post('/accounts', data),
   toggle: (id) => apiClient.post(`/accounts/${id}/toggle`, {}),
   setMode: (id, mode) => apiClient.post(`/accounts/${id}/mode`, { mode }),
+  delete: (id) => apiClient.delete(`/accounts/${id}`),
 };
 
 export const profileApi = {
   get: () => apiClient.get('/profile'),
   update: (data) => apiClient.put('/profile', data),
   updateAIConfig: (data) => apiClient.post('/profile/ai-config', data),
+  listOllamaModels: (baseUrl) => apiClient.get(`/system/ollama-models?url=${encodeURIComponent(baseUrl || '')}`),
 };
 
 export const analyticsApi = {
   getOverview: () => apiClient.get('/analytics'),
+  addComment: (data) => apiClient.post('/analytics/comments', data),
   getLogs: () => apiClient.get('/logs'),
   resetDemo: () => apiClient.post('/system/reset', {}),
 };

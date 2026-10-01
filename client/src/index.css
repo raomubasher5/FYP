@@ -1,6 +1,67 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   BLOTATO-INSPIRED THEME
+   Near-black violet canvas · glowing purple/magenta auras ·
+   hot-pink → orange gradient accents · pink→violet pill CTAs
+   ============================================================ */
+
+/* --- Palette remap: every existing utility gets the Blotato hue --- */
+@theme {
+  /* Warm sand neutrals -> purple-tinted neutrals (violet ink & lavender paper) */
+  --color-stone-50: #f8f6fc;
+  --color-stone-100: #f1ecf8;
+  --color-stone-200: #e5def4;
+  --color-stone-300: #d0c3e8;
+  --color-stone-400: #a395c5;
+  --color-stone-500: #80719f;
+  --color-stone-600: #655780;
+  --color-stone-700: #4a3d64;
+  --color-stone-800: #2c2145;
+  --color-stone-900: #1a1129;
+  --color-stone-950: #0d0818;
+
+  /* Cool slate neutrals -> same violet ink family */
+  --color-slate-50: #f8f6fc;
+  --color-slate-100: #f1ecf8;
+  --color-slate-200: #e5def4;
+  --color-slate-300: #d0c3e8;
+  --color-slate-400: #a395c5;
+  --color-slate-500: #80719f;
+  --color-slate-600: #655780;
+  --color-slate-700: #4a3d64;
+  --color-slate-800: #2c2145;
+  --color-slate-900: #1a1129;
+  --color-slate-950: #0d0818;
+
+  /* Emerald (success/live) -> Blotato hot magenta */
+  --color-emerald-50: #fdf2f8;
+  --color-emerald-100: #fce7f3;
+  --color-emerald-200: #fbcfe8;
+  --color-emerald-300: #f9a8d4;
+  --color-emerald-400: #f472b6;
+  --color-emerald-500: #ec4899;
+  --color-emerald-600: #db2777;
+  --color-emerald-700: #be185d;
+  --color-emerald-800: #9d174d;
+  --color-emerald-900: #831843;
+  --color-emerald-950: #500724;
+
+  /* Cyan (data accent) -> Blotato signal orange/amber */
+  --color-cyan-50: #fffbeb;
+  --color-cyan-100: #fef3c7;
+  --color-cyan-200: #fde68a;
+  --color-cyan-300: #fcd34d;
+  --color-cyan-400: #fbbf24;
+  --color-cyan-500: #f59e0b;
+  --color-cyan-600: #d97706;
+  --color-cyan-700: #b45309;
+  --color-cyan-800: #92400e;
+  --color-cyan-900: #78350f;
+  --color-cyan-950: #451a03;
+}
+
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -14,145 +75,201 @@
   }
 }
 
-/* Warm Editorial Sand Canvas (Bespoke Non-AI Palette) */
+/* --- Canvas: dark violet night with magenta/violet auras --- */
 .app-canvas {
-  background-color: #f7f7f5;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(217, 119, 6, 0.02) 0px, transparent 40%),
-    radial-gradient(at 100% 0%, rgba(28, 25, 23, 0.02) 0px, transparent 40%),
-    radial-gradient(at 50% 100%, rgba(28, 25, 23, 0.02) 0px, transparent 40%);
+  background-color: #f8f6fc;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.06) 0px, transparent 42%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.08) 0px, transparent 42%),
+    radial-gradient(at 50% 120%, rgba(124, 58, 237, 0.05) 0px, transparent 55%);
 }
 
 .dark .app-canvas {
-  background-color: #0c0a09;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.03) 0px, transparent 40%),
-    radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.02) 0px, transparent 40%),
-    radial-gradient(at 50% 100%, rgba(28, 25, 23, 0.03) 0px, transparent 40%);
+  background-color: #0a0512;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.09) 0px, transparent 45%),
+    radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.12) 0px, transparent 48%),
+    radial-gradient(at 50% 120%, rgba(88, 28, 135, 0.18) 0px, transparent 58%);
 }
 
-/* Crisp Warm Card Surfaces (Linear / Notion Inspired) */
+/* --- Cards: deep violet glass with lavender hairlines --- */
 .glass-panel {
   background: #ffffff;
-  border: 1px solid #e7e5e4;
-  box-shadow: 
-    0 1px 2px 0 rgba(28, 25, 23, 0.02), 
-    0 4px 16px -2px rgba(28, 25, 23, 0.04),
+  border: 1px solid #e6dff2;
+  box-shadow:
+    0 1px 2px 0 rgba(26, 17, 41, 0.03),
+    0 4px 16px -2px rgba(26, 17, 41, 0.05),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-  color: #1c1917;
+  color: #1a1129;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark .glass-panel {
-  background: rgba(28, 25, 23, 0.75);
+  background: rgba(22, 14, 36, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 4px 20px -4px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
-  color: #fafaf9;
+  border: 1px solid rgba(200, 180, 255, 0.12);
+  box-shadow:
+    0 4px 24px -6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  color: #f1ecfa;
 }
 
 .glass-panel-hover:hover {
-  border-color: #a8a29e;
+  border-color: #c9bce2;
   transform: translateY(-1px);
-  box-shadow: 
-    0 2px 4px 0 rgba(28, 25, 23, 0.02),
-    0 12px 28px -4px rgba(28, 25, 23, 0.08),
+  box-shadow:
+    0 2px 4px 0 rgba(26, 17, 41, 0.03),
+    0 12px 28px -6px rgba(26, 17, 41, 0.09),
     inset 0 1px 0 0 rgba(255, 255, 255, 1);
 }
 
 .dark .glass-panel-hover:hover {
-  background: rgba(41, 37, 36, 0.9);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.45);
+  background: rgba(31, 21, 52, 0.92);
+  border-color: rgba(236, 72, 153, 0.35);
+  box-shadow:
+    0 12px 32px -8px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(236, 72, 153, 0.1),
+    0 0 28px -6px rgba(236, 72, 153, 0.18);
 }
 
 .glass-card-active {
-  border-color: #1c1917 !important;
-  box-shadow: 
-    0 0 0 1px #1c1917, 
-    0 8px 20px -4px rgba(28, 25, 23, 0.12) !important;
+  border-color: #ec4899 !important;
+  box-shadow:
+    0 0 0 1px #ec4899,
+    0 8px 24px -6px rgba(236, 72, 153, 0.3) !important;
 }
 
 .dark .glass-card-active {
-  border-color: #fafaf9 !important;
-  box-shadow: 
-    0 0 0 1px #fafaf9, 
-    0 8px 20px -4px rgba(0, 0, 0, 0.4) !important;
+  border-color: #f472b6 !important;
+  box-shadow:
+    0 0 0 1px #ec4899,
+    0 0 24px -4px rgba(236, 72, 153, 0.35) !important;
 }
 
-/* Precision Obsidian & Stone Input Controls */
+/* --- Inputs: violet ink fields, magenta focus ring --- */
 .saas-input {
   background-color: #ffffff;
-  border: 1px solid #d6d3d1;
-  color: #1c1917;
-  box-shadow: 0 1px 2px 0 rgba(28, 25, 23, 0.02);
+  border: 1px solid #ddd2ec;
+  color: #1a1129;
+  box-shadow: 0 1px 2px 0 rgba(26, 17, 41, 0.02);
   transition: all 0.15s ease-in-out;
 }
 
 .saas-input:hover {
-  border-color: #a8a29e;
+  border-color: #b9a8d6;
 }
 
 .saas-input:focus {
   background-color: #ffffff;
-  border-color: #1c1917;
+  border-color: #ec4899;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(28, 25, 23, 0.08), 0 1px 2px 0 rgba(28, 25, 23, 0.04);
+  box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.18);
 }
 
 .dark .saas-input {
-  background-color: rgba(28, 25, 23, 0.8);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: #fafaf9;
+  background-color: rgba(19, 12, 33, 0.85);
+  border-color: rgba(200, 180, 255, 0.16);
+  color: #f1ecfa;
   box-shadow: none;
 }
 
 .dark .saas-input:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(200, 180, 255, 0.3);
 }
 
 .dark .saas-input:focus {
-  background-color: rgba(28, 25, 23, 0.95);
-  border-color: #fafaf9;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+  background-color: rgba(19, 12, 33, 0.95);
+  border-color: #ec4899;
+  box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.28);
 }
 
-/* Obsidian Monolith Primary Button */
-.saas-btn-primary {
-  background: #1c1917;
-  color: #fafaf9;
-  border: 1px solid #0c0a09;
-  box-shadow: 
-    0 1px 2px 0 rgba(28, 25, 23, 0.15), 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+/* --- Primary button: Blotato pink → violet gradient pill --- */
+.saas-btn-primary,
+.blotato-cta {
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  color: #ffffff;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 4px 24px -6px rgba(236, 72, 153, 0.55),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
   transition: all 0.15s ease;
 }
 
-.saas-btn-primary:hover {
-  background: #000000;
-  box-shadow: 
-    0 4px 12px 0 rgba(28, 25, 23, 0.2), 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+/* Light sheen sweep across the CTA on hover */
+.saas-btn-primary::after,
+.blotato-cta::after {
+  content: '';
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(105deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
+  transform: translateX(-140%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.saas-btn-primary:hover::after,
+.blotato-cta:hover::after {
+  animation: cta-sheen 0.8s ease forwards;
+}
+
+.saas-btn-primary:hover,
+.blotato-cta:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    0 6px 32px -6px rgba(236, 72, 153, 0.7),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-0.5px);
 }
 
-.saas-btn-primary:active {
+.saas-btn-primary:active,
+.blotato-cta:active {
   transform: translateY(0.5px);
+  filter: brightness(0.98);
 }
 
-.dark .saas-btn-primary {
-  background: #fafaf9;
-  color: #1c1917;
-  border: 1px solid #ffffff;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+/* --- Signature: hot-pink → orange gradient headline text (slowly drifting) --- */
+.gradient-text {
+  background: linear-gradient(92deg, #ff2d8f 0%, #ff6a3d 55%, #ffb02e 100%, #ff2d8f 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradient-drift 7s ease-in-out infinite alternate;
 }
 
-.dark .saas-btn-primary:hover {
-  background: #ffffff;
-  box-shadow: 0 4px 12px 0 rgba(255, 255, 255, 0.2);
+/* --- Signature: violet/magenta aura behind hero panels --- */
+.glow-hero {
+  position: relative;
+}
+
+.glow-hero::before {
+  content: '';
+  position: absolute;
+  inset: -30px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 2rem;
+  background:
+    radial-gradient(560px 260px at 12% 18%, rgba(236, 72, 153, 0.14), transparent 62%),
+    radial-gradient(640px 300px at 88% 8%, rgba(168, 85, 247, 0.16), transparent 62%);
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+
+.glow-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dark .glow-hero::before {
+  background:
+    radial-gradient(560px 260px at 12% 18%, rgba(236, 72, 153, 0.2), transparent 62%),
+    radial-gradient(640px 300px at 88% 8%, rgba(168, 85, 247, 0.24), transparent 62%);
 }
 
 /* Custom scrollbars */
@@ -164,11 +281,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 162, 158, 0.35);
+  background: rgba(163, 149, 197, 0.4);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 162, 158, 0.6);
+  background: rgba(236, 72, 153, 0.55);
 }
 
 @keyframes spin-slow {
@@ -178,4 +295,66 @@
 
 .animate-spin-slow {
   animation: spin-slow 8s linear infinite;
+}
+
+/* --- Motion: Blotato-style entrances & micro-interactions --- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes cta-sheen {
+  to { transform: translateX(320%) skewX(-18deg); }
+}
+
+@keyframes gradient-drift {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-1 { animation-delay: 0.06s; }
+.stagger-2 { animation-delay: 0.14s; }
+.stagger-3 { animation-delay: 0.22s; }
+.stagger-4 { animation-delay: 0.3s; }
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-scale-in,
+  .gradient-text,
+  .glow-hero::before,
+  .saas-btn-primary::after,
+  .blotato-cta::after {
+    animation: none !important;
+  }
 }

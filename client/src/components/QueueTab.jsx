@@ -55,7 +55,7 @@ export default function QueueTab({ posts, onApprovePost, onPublishNow, onDeleteP
             onClick={() => setFilter('all')}
             className={`px-3 py-1.5 rounded-xl transition cursor-pointer ${
               filter === 'all' 
-                ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 shadow-xs' 
+                ? 'bg-pink-500 text-white shadow-xs' 
                 : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
@@ -235,7 +235,7 @@ export default function QueueTab({ posts, onApprovePost, onPublishNow, onDeleteP
                     {isDraft && (
                       <button
                         onClick={() => onApprovePost(post.id)}
-                        className="flex items-center space-x-1.5 px-4 py-2 bg-stone-900 hover:bg-black text-white dark:bg-stone-100 dark:hover:bg-white dark:text-stone-900 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer active:scale-[0.99]"
+                        className="flex items-center space-x-1.5 px-4 py-2 blotato-cta font-bold text-xs rounded-xl shadow-xs transition cursor-pointer active:scale-[0.99]"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Approve Post</span>
@@ -246,10 +246,10 @@ export default function QueueTab({ posts, onApprovePost, onPublishNow, onDeleteP
                       <button
                         onClick={() => onPublishNow(post.id)}
                         className="flex items-center space-x-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
-                        title="Simulate immediate publishing for FYP demonstration"
+                        title="Publish immediately in sandbox simulation mode — no live platform calls"
                       >
                         <Play className="w-3.5 h-3.5" />
-                        <span>Publish Now (Demo)</span>
+                        <span>Publish Now (Sandbox)</span>
                       </button>
                     )}
 

@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Builds
+client/dist/
+
+# Environment (keep .env.example committed, never .env)
+.env
+
+# Logs & OS noise
+*.log
+.DS_Store
+
+# Local research assets
+image-search/

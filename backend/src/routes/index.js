@@ -1,41 +1,34 @@
+'use strict';
+
+/**
+ * Route aggregator — one dedicated router file per resource, mounted here.
+ *
+ *   POSTS      -> ./postRoutes
+ *   PROFILE    -> ./profileRoutes
+ *   ACCOUNTS   -> ./accountRoutes
+ *   ANALYTICS  -> ./analyticsRoutes
+ *   SYSTEM     -> ./systemRoutes
+ */
+
 const express = require('express');
 const postRoutes = require('./postRoutes');
-const { 
-  profileController, 
-  accountController, 
-  analyticsController, 
-  systemController 
-} = require('../controllers');
+const profileRoutes = require('./profileRoutes');
+const accountRoutes = require('./accountRoutes');
+const analyticsRoutes = require('./analyticsRoutes');
+const systemRoutes = require('./systemRoutes');
+const oauthRoutes = require('./oauthRoutes');
+const systemController = require('../controllers/SystemController');
 
 const router = express.Router();
 
-// 1. Profile Routes
-const profileRouter = express.Router();
-profileRouter.get('/', profileController.get);
-profileRouter.put('/', profileController.update);
-profileRouter.post('/ai-config', profileController.updateAIConfig);
-
-// 2. Accounts Routes
-const accountRouter = express.Router();
-accountRouter.get('/', accountController.getAll);
-accountRouter.post('/:id/toggle', accountController.toggleConnection);
-accountRouter.post('/:id/mode', accountController.setMode);
-
-// 3. Analytics Routes
-const analyticsRouter = express.Router();
-analyticsRouter.get('/', analyticsController.getOverview);
-
-// 4. System Routes
-const systemRouter = express.Router();
-systemRouter.get('/logs', systemController.getLogs);
-systemRouter.post('/reset', systemController.resetDemo);
-
-// Mount All Submodules under /api
 router.use('/posts', postRoutes);
-router.use('/profile', profileRouter);
-router.use('/accounts', accountRouter);
-router.use('/analytics', analyticsRouter);
-router.use('/system', systemRouter);
+router.use('/profile', profileRoutes);
+router.use('/accounts', accountRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/system', systemRoutes);
+router.use('/auth', oauthRoutes); // live platform OAuth callbacks
+
+// Convenience alias used by the client: /api/logs -> /api/system/logs
 router.get('/logs', systemController.getLogs);
 
 module.exports = router;

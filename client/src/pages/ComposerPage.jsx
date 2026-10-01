@@ -9,7 +9,7 @@ export default function ComposerPage() {
     <StudioTab
       profile={profile}
       onGeneratePost={actions.generatePost}
-      onCreatePost={actions.createPost}
+      onSchedulePost={actions.createPost}
       onNotify={notify}
     />
   );

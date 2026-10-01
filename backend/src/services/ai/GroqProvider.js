@@ -1,4 +1,5 @@
 const BaseAIProvider = require('./BaseAIProvider');
+const InsightEngine = require('../insights/InsightEngine');
 
 class GroqProvider extends BaseAIProvider {
   constructor(apiKey, model = 'llama-3.3-70b-versatile') {
@@ -59,12 +60,16 @@ Respond ONLY in valid raw JSON with this exact schema:
     const data = await response.json();
     const content = JSON.parse(data.choices[0].message.content);
 
+    // Real image generated from the LLM's own image prompt (Pollinations diffusion API)
+    const imagePrompt = content.imagePrompt || `Professional promotional photo for ${topic}`;
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=800&height=800&nologo=true`;
+
     return {
       provider: `Groq (${this.model})`,
       coreTopic: topic,
       toneUsed: tone,
-      imagePrompt: content.imagePrompt,
-      imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
+      imagePrompt,
+      imageUrl,
       platforms: content.platforms,
       timestamp: new Date().toISOString()
     };
@@ -72,9 +77,10 @@ Respond ONLY in valid raw JSON with this exact schema:
 
   async analyzeSentiment(comments = []) {
     if (!comments.length) {
+      // Honest: no comments imported yet -> no sentiment to report
       return {
         provider: this.name,
-        metrics: { positive: 0, neutral: 0, negative: 0 },
+        metrics: null,
         analyzedComments: []
       };
     }
@@ -128,15 +134,8 @@ Respond ONLY in valid raw JSON with this exact schema:
   }
 
   async getRecommendations({ recentPosts = [] }) {
-    return [
-      {
-        id: 'rec-groq-1',
-        type: 'timing',
-        title: 'High-Velocity Engagement Window',
-        message: 'Llama 3.3 detected highest CTR for your industry on Tuesday and Thursday afternoons.',
-        action: 'Sync Schedule'
-      }
-    ];
+    // Data-driven: insights computed from the user's REAL published posts
+    return InsightEngine.build(recentPosts);
   }
 }
 

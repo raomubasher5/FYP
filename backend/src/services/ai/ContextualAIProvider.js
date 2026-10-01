@@ -1,4 +1,5 @@
 const BaseAIProvider = require('./BaseAIProvider');
+const InsightEngine = require('../insights/InsightEngine');
 
 class ContextualAIProvider extends BaseAIProvider {
   constructor() {
@@ -83,7 +84,8 @@ class ContextualAIProvider extends BaseAIProvider {
         platform: 'facebook',
         text: copy.fb,
         callToAction: 'Learn More',
-        link: 'https://example.com'
+        // No fabricated destination link — use a real URL when available.
+        link: null
       };
     }
 
@@ -110,9 +112,10 @@ class ContextualAIProvider extends BaseAIProvider {
 
   async analyzeSentiment(comments = []) {
     if (!comments.length) {
+      // Honest: no comments imported yet -> no sentiment to report
       return {
         provider: this.name,
-        metrics: { positive: 0, neutral: 0, negative: 0 },
+        metrics: null,
         analyzedComments: []
       };
     }
@@ -148,22 +151,8 @@ class ContextualAIProvider extends BaseAIProvider {
   }
 
   async getRecommendations({ recentPosts = [] }) {
-    return [
-      {
-        id: 'rec-1',
-        type: 'timing',
-        title: 'Peak Engagement Window',
-        message: 'Your audience exhibits the highest interaction rates between 12:30 PM and 2:00 PM.',
-        action: 'Apply to Schedule'
-      },
-      {
-        id: 'rec-2',
-        type: 'content',
-        title: 'High-Conversion Topic',
-        message: 'Behind-the-scenes preparation and craftsmanship videos achieve 2.4x higher response rates.',
-        action: 'Draft New Campaign'
-      }
-    ];
+    // Data-driven: insights computed from the user's REAL published posts
+    return InsightEngine.build(recentPosts);
   }
 }
 
