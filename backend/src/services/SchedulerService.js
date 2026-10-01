@@ -32,7 +32,7 @@ class SchedulerService {
 
     try {
       const now = new Date();
-      const duePosts = postRepository.findAll(p => {
+      const duePosts = await postRepository.findAll(p => {
         return p.status === 'scheduled' && p.scheduledTime && new Date(p.scheduledTime) <= now;
       });
 

@@ -47,7 +47,7 @@ const handleShutdown = async (signal) => {
     console.log(`  Server Listening on: http://${config.host}:${config.port}`);
     console.log(`  Database: MongoDB (connected)`);
     console.log(`  AI Engine: ${require('./services/ai').activeProviderName} (Factory Pattern)`);
-    console.log(`  Publishing: SANDBOX SIMULATION (no live platform API calls)`);
+    console.log(`  Publishing: LIVE for OAuth-connected channels + sandbox simulation fallback`);
     console.log(`================================================================`);
   });
 
